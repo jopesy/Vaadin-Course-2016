@@ -1,0 +1,53 @@
+Huutokauppa:
+-Sisäänkirjautuminen
+-Myynti-ilmoituksen teko lomake
+-Tapa tarkastella myynti-ilmoituksia
+-Mahdollisesti tapa tarkastella myynti-ilmoituksia ilman sisäänkirjaumista
+-Nappi esineestä huutamiseen. (Mahdollinen “osta heti” -nappi ja hinta sille)
+-Tapa tarkastella omia huutoja ja myynnissä olevia tavaroita
+-Jotain muita ominaisuuksia…?
+
+Tietokanta:
+Käyttäjä:
+	-id
+	-Etunimi
+	-Sukunimi
+	-Sähköposti
+	-Puhelinnumero
+	-Esineet
+	-Salasana
+
+Esine:
+	-id
+	-Nimi
+	-Merkki
+	-Malli
+	-Kuva
+	-Kuvaus
+	-Lisääjä
+	-Hinta (ostaheti hinta)
+	-Alkuhinta
+	-Tarjoukset(lista)
+	-Päättymispäivä
+	-Esillä
+
+Tarjous:
+	-id
+	-Esine
+	-Käyttäjä
+	-Hinta
+
+
+Kun tarjousaika päättyy tai osta heti hinta maksetaan, ostajalle ja myyjälle lähetetään sähköpostia ja tarjous piilotetaan myynti-ilmoituksista. 
+
+
+
+Laajennuksia:
+	-Käyttäjistä tykkääminen
+	-Käyttäjän reporttaus
+
+
+
+
+
+
