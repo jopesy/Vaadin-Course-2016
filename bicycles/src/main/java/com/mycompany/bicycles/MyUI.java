@@ -6,6 +6,7 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
+import com.vaadin.server.Page;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
@@ -21,21 +22,37 @@ import com.vaadin.ui.VerticalLayout;
  */
 @Theme("mytheme")
 public class MyUI extends UI {
+    private String currentUser = "Not logged in";
+    private Label userLabel = new Label("Not logged in");
+    final VerticalLayout layout = new VerticalLayout();
 
     @Override
     protected void init(VaadinRequest vaadinRequest) {
-        final VerticalLayout layout = new VerticalLayout();
+        getPage().setTitle("Bicycles");
         
-        final TextField name = new TextField();
+        /*final TextField name = new TextField();
         name.setCaption("Type your name here:");
 
         Button button = new Button("Click Me");
         button.addClickListener( e -> {
             layout.addComponent(new Label("Thanks " + name.getValue() 
                     + ", it works!"));
+        });*/
+        
+        
+        LoginForm loginForm = new LoginForm();
+        
+        Button loginToggle = new Button("Show login form");
+        loginToggle.addClickListener( e -> {
+            if(loginForm.isVisible() == true) {
+                loginForm.setVisible(false);
+            }
+            else loginForm.setVisible(true);
         });
         
-        layout.addComponents(name, button);
+        //layout.addComponents(name, button);
+        layout.addComponent(userLabel);
+        layout.addComponents(loginToggle, loginForm);
         layout.setMargin(true);
         layout.setSpacing(true);
         
