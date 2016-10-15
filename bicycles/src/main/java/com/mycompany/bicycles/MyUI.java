@@ -7,6 +7,9 @@ import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.Page;
+import com.vaadin.navigator.Navigator;
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
@@ -30,33 +33,12 @@ public class MyUI extends UI {
     protected void init(VaadinRequest vaadinRequest) {
         getPage().setTitle("Bicycles");
         
-        /*final TextField name = new TextField();
-        name.setCaption("Type your name here:");
-
-        Button button = new Button("Click Me");
-        button.addClickListener( e -> {
-            layout.addComponent(new Label("Thanks " + name.getValue() 
-                    + ", it works!"));
-        });*/
+        new Navigator(this, this);
         
+        getNavigator().addView(LoginView.NAME, LoginView.class);
+        getNavigator().addView(MainView.NAME, MainView.class);
         
-        LoginForm loginForm = new LoginForm();
-        
-        Button loginToggle = new Button("Show login form");
-        loginToggle.addClickListener( e -> {
-            if(loginForm.isVisible() == true) {
-                loginForm.setVisible(false);
-            }
-            else loginForm.setVisible(true);
-        });
-        
-        //layout.addComponents(name, button);
-        layout.addComponent(userLabel);
-        layout.addComponents(loginToggle, loginForm);
-        layout.setMargin(true);
-        layout.setSpacing(true);
-        
-        setContent(layout);
+        getNavigator().navigateTo(MainView.NAME);
     }
 
     @WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)
