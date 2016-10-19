@@ -52,9 +52,7 @@ public class LoginView extends CustomComponent implements View{
         submitButton = new Button("Login");
         submitButton.setClickShortcut(ShortcutAction.KeyCode.ENTER);
         submitButton.addClickListener( click -> {  
-            String username = usernameField.getValue();
-            getSession().setAttribute("username", username);
-            getUI().getNavigator().navigateTo(MainView.NAME);
+            validateFields();
         });
         
         registerButton = new Button("Register");
@@ -87,6 +85,27 @@ public class LoginView extends CustomComponent implements View{
         layout.setComponentAlignment(panel, Alignment.MIDDLE_CENTER);
         setCompositionRoot(layout);
         
+    }
+    
+    public void validateFields() {
+        String username = usernameField.getValue();
+        String password = passwordField.getValue();
+        boolean isValid = false;
+        
+        // TODO: validate with database
+        if(username.equals("admin") && password.equals("admin")){
+            isValid = true;
+        }
+        
+        if(isValid){
+            getSession().setAttribute("username", username);
+            getUI().getNavigator().navigateTo(MainView.NAME);
+        }
+        else {
+            usernameField.setValue("");
+            passwordField.setValue("");
+            usernameField.focus();
+        }
     }
 
     @Override

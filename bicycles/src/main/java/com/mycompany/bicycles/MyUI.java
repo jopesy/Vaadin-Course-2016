@@ -32,6 +32,7 @@ public class MyUI extends UI {
     @Override
     protected void init(VaadinRequest vaadinRequest) {
         getPage().setTitle("Bicycles");
+        setStyleName("test");
         
         new Navigator(this, this);
         

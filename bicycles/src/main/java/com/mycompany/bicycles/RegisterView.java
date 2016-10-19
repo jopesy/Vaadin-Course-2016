@@ -56,7 +56,7 @@ public class RegisterView extends CustomComponent implements View{
         submitButton.setClickShortcut(ShortcutAction.KeyCode.ENTER);
         submitButton.addClickListener( click -> {  
             String username = usernameField.getValue();
-            getUI().getNavigator().navigateTo(MainView.NAME);
+            //getUI().getNavigator().navigateTo(MainView.NAME);
         });
         
         returnButton = new Button("Cancel");
