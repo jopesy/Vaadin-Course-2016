@@ -25,6 +25,7 @@ public class MainView extends CustomComponent implements View{
     private final HorizontalLayout navBarLayout;
     private final Label userLabel;
     private final Button loginButton;
+    private final Button logoutButton;
     
     public MainView() {
         navBarLayout = new HorizontalLayout();
@@ -34,11 +35,17 @@ public class MainView extends CustomComponent implements View{
         loginButton.addClickListener( e-> {
             getUI().getNavigator().navigateTo(LoginView.NAME);
         });
+        logoutButton = new Button("Log out");
+        logoutButton.addClickListener( click -> {
+            logout();
+        });
+        logoutButton.setVisible(false);
         
-        navBarLayout.addComponents(userLabel, loginButton);
+        navBarLayout.addComponents(userLabel, loginButton, logoutButton);
         navBarLayout.setMargin(true);
         navBarLayout.setSpacing(true);
         navBarLayout.setComponentAlignment(loginButton, Alignment.TOP_RIGHT);
+        navBarLayout.setComponentAlignment(logoutButton, Alignment.TOP_RIGHT);
         navBarLayout.setSizeFull();
         setCompositionRoot(navBarLayout);
     }
@@ -51,12 +58,24 @@ public class MainView extends CustomComponent implements View{
             username = String.valueOf(getSession().getAttribute("username"));
             if(!username.isEmpty()){
                 userLabel.setValue(username);
-                loginButton.setCaption("Log out");
+                loginButton.setVisible(false);
+                logoutButton.setVisible(true);
+            }
+            else {
+                loginButton.setVisible(true);
+                logoutButton.setVisible(false);
             }
         }
         else {
             userLabel.setValue(defaultText);
         }
+    }
+    
+    public void logout() {
+        System.out.println("Log out");
+        getSession().setAttribute("username", null);
+        userLabel.setValue("Not logged in");
+        getUI().getNavigator().navigateTo(LoginView.NAME);
     }
     
 }

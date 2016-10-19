@@ -35,8 +35,9 @@ public class MyUI extends UI {
         
         new Navigator(this, this);
         
-        getNavigator().addView(LoginView.NAME, LoginView.class);
         getNavigator().addView(MainView.NAME, MainView.class);
+        getNavigator().addView(LoginView.NAME, LoginView.class);
+        getNavigator().addView(RegisterView.NAME, RegisterView.class);
         
         getNavigator().navigateTo(MainView.NAME);
     }
