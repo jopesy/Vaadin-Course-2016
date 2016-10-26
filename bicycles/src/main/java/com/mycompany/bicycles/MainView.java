@@ -90,7 +90,7 @@ public class MainView extends CustomComponent implements View{
         System.out.println("Log out");
         getSession().setAttribute("username", null);
         userLabel.setValue("Not logged in");
-        getUI().getNavigator().navigateTo(LoginView.NAME);
+        getUI().getNavigator().navigateTo(MainView.NAME);
         
         new Notification("Logged out!",
             null,
