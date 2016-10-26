@@ -7,11 +7,13 @@ package com.mycompany.bicycles;
 
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.Page;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 
 /**
@@ -26,6 +28,8 @@ public class MainView extends CustomComponent implements View{
     private final Label userLabel;
     private final Button loginButton;
     private final Button logoutButton;
+    private final Button registerButton;
+    private final HorizontalLayout buttonContainer;
     
     public MainView() {
         navBarLayout = new HorizontalLayout();
@@ -41,11 +45,20 @@ public class MainView extends CustomComponent implements View{
         });
         logoutButton.setVisible(false);
         
-        navBarLayout.addComponents(userLabel, loginButton, logoutButton);
+        registerButton = new Button("Register");
+        registerButton.addClickListener( click -> {
+            getUI().getNavigator().navigateTo(RegisterView.NAME);
+        });
+        
+        buttonContainer = new HorizontalLayout();
+        buttonContainer.setSpacing(true);
+        buttonContainer.addComponents(registerButton, loginButton, logoutButton);
+        
+        
+        navBarLayout.addComponents(userLabel, buttonContainer);
         navBarLayout.setMargin(true);
         navBarLayout.setSpacing(true);
-        navBarLayout.setComponentAlignment(loginButton, Alignment.TOP_RIGHT);
-        navBarLayout.setComponentAlignment(logoutButton, Alignment.TOP_RIGHT);
+        navBarLayout.setComponentAlignment(buttonContainer, Alignment.TOP_RIGHT);
         navBarLayout.setSizeFull();
         setCompositionRoot(navBarLayout);
     }
@@ -60,10 +73,12 @@ public class MainView extends CustomComponent implements View{
                 userLabel.setValue(username);
                 loginButton.setVisible(false);
                 logoutButton.setVisible(true);
+                registerButton.setVisible(false);
             }
             else {
                 loginButton.setVisible(true);
                 logoutButton.setVisible(false);
+                registerButton.setVisible(true);
             }
         }
         else {
@@ -76,6 +91,11 @@ public class MainView extends CustomComponent implements View{
         getSession().setAttribute("username", null);
         userLabel.setValue("Not logged in");
         getUI().getNavigator().navigateTo(LoginView.NAME);
+        
+        new Notification("Logged out!",
+            null,
+            Notification.Type.TRAY_NOTIFICATION, true)
+            .show(Page.getCurrent());
     }
     
 }

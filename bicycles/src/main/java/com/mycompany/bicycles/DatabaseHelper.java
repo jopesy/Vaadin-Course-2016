@@ -11,20 +11,12 @@ import java.sql.*;
 public class DatabaseHelper {
     
     //Lisää käyttäjä
-    static void addUser(){
+    static void addUser(String firstname, String lastname, String username, String email, String phonenro, String password){
     try{
         Class.forName("com.mysql.jdbc.Driver");  
         Connection con=DriverManager.getConnection(  
         "jdbc:mysql://localhost:3306/auctions?zeroDateTimeBehavior=convertToNull", "root", "root");  
         //Määrittelee yhteyden databaseen ja yhdistää
-        
-        //Muuttujia testausta varten, muuttujien arvot voi vaihtaa kentistä luettaviin arvoihin?
-        String firstname = "Teppo";
-        String lastname = "Testaaja";
-        String email = "teppo@gmail.com";
-        String phone = "040123123";
-        String password = "salasana12345";
-        String username = "teppotestaaja";
 
         //SQL queryn määrittely
         PreparedStatement stmt = con.prepareStatement("INSERT INTO users(firstname, lastname, email, phone, password, username) VALUES(?,?,?,?,?,?)");
@@ -32,7 +24,7 @@ public class DatabaseHelper {
         stmt.setString(1,firstname);
         stmt.setString(2,lastname);
         stmt.setString(3,email);
-        stmt.setString(4,phone);
+        stmt.setString(4,phonenro);
         stmt.setString(5,password);
         stmt.setString(6,username);
         //Suorittaa queryn
@@ -56,6 +48,44 @@ static void deleteUser(){
         stmt.executeUpdate(); //Queryn suoritus
         con.close(); //Yhteyden katkaisu
     }catch(Exception e){ System.out.println(e);}
+}
+
+static boolean checkUsernameAvailability(String username) {
+    boolean usernameAvailable = true;
+    try {
+        Class.forName("com.mysql.jdbc.Driver");  
+        Connection con=DriverManager.getConnection(  
+        "jdbc:mysql://localhost:3306/auctions?zeroDateTimeBehavior=convertToNull", "root", "root");
+        
+        PreparedStatement stmt = con.prepareStatement("SELECT * FROM users WHERE username=?");
+        stmt.setString(1,username);
+        ResultSet rs = stmt.executeQuery();
+        if(rs.next()){
+            usernameAvailable = false;
+        }
+        con.close(); //Yhteyden katkaisu
+    }catch(Exception e){ System.out.println(e);}
+    return usernameAvailable;
+}
+
+//Palauttaa userid:n, tai -1:n mikäli käyttäjää ei löydy tietokannasta
+static int getUserId(String username, String password) {
+    int userid = -1;
+    try{
+        Class.forName("com.mysql.jdbc.Driver");  
+        Connection con=DriverManager.getConnection(  
+        "jdbc:mysql://localhost:3306/auctions?zeroDateTimeBehavior=convertToNull", "root", "root");
+        
+        PreparedStatement stmt = con.prepareStatement("SELECT * FROM users WHERE username=? AND password=?"); //Query
+        stmt.setString(1,username);
+        stmt.setString(2,password);
+        ResultSet rs = stmt.executeQuery();
+        if(rs.next()){
+            userid = rs.getInt("userid");
+        }
+        con.close(); //Yhteyden katkaisu
+    }catch(Exception e){ System.out.println(e);}
+    return userid;
 }
 
 //Lisää esine ja sen kuva
@@ -167,7 +197,8 @@ static void getItems(){
 
 //Hakee yksittäisen käyttäjän tiedot
 static void getUser(){
-    try{Class.forName("com.mysql.jdbc.Driver");  
+    try{
+        Class.forName("com.mysql.jdbc.Driver");  
         Connection con=DriverManager.getConnection(  
         "jdbc:mysql://localhost:3306/auctions?zeroDateTimeBehavior=convertToNull", "root", "root");
         

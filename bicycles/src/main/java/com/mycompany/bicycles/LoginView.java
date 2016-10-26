@@ -10,12 +10,14 @@ import com.vaadin.event.ShortcutAction;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.ExternalResource;
+import com.vaadin.server.Page;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Link;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
@@ -27,6 +29,7 @@ import com.vaadin.ui.VerticalLayout;
  * Contains a simple form for logging in
  */
 public class LoginView extends CustomComponent implements View{
+    private final DatabaseHelper dbconnection = new DatabaseHelper();
     public static final String NAME = "login";
     private final VerticalLayout layout;
     private final HorizontalLayout buttonContainer;
@@ -40,19 +43,17 @@ public class LoginView extends CustomComponent implements View{
         usernameField = new TextField("Username:");
         usernameField.setRequired(true);
         usernameField.setInputPrompt("Enter username");
-        //usernameField.addValidator(new EmailValidator("Please enter a valid email address"));
         usernameField.setInvalidAllowed(false);
         
         passwordField = new PasswordField("Password:");
         passwordField.setRequired(true);
-        //passwordField.setInputPrompt("password");
         // TODO: Add password validator
         passwordField.setValue("");
         
         submitButton = new Button("Login");
         submitButton.setClickShortcut(ShortcutAction.KeyCode.ENTER);
-        submitButton.addClickListener( click -> {  
-            validateFields();
+        submitButton.addClickListener( click -> {
+            validateForm();
         });
         
         registerButton = new Button("Register");
@@ -87,25 +88,56 @@ public class LoginView extends CustomComponent implements View{
         
     }
     
-    public void validateFields() {
+    public void validateForm() {
         String username = usernameField.getValue();
         String password = passwordField.getValue();
         boolean isValid = false;
         
-        // TODO: validate with database
-        if(username.equals("admin") && password.equals("admin")){
-            isValid = true;
+        if(usernameField.isEmpty()){
+            usernameField.setRequiredError("Please enter your username");
+            showErrorMessage("Username field is empty!");
+            return;
         }
+        if(passwordField.isEmpty()){
+            passwordField.setRequiredError("Please enter your password");
+            showErrorMessage("Password field is empty!");
+            return;
+        }
+        if(!usernameField.isValid() || !passwordField.isValid()) {
+            return;
+        }
+        
+        // Check if user exists in database
+        int userid = dbconnection.getUserId(username, password);
+        if(userid != -1) {
+            isValid = true;
+        }   
         
         if(isValid){
             getSession().setAttribute("username", username);
+            getSession().setAttribute("userid", userid);
             getUI().getNavigator().navigateTo(MainView.NAME);
+            
+            new Notification("Logged in!",
+                "Hello, "+username+"!",
+                Notification.Type.TRAY_NOTIFICATION, true)
+                .show(Page.getCurrent());
         }
         else {
             usernameField.setValue("");
             passwordField.setValue("");
             usernameField.focus();
+            usernameField.setRequiredError(null);
+            passwordField.setRequiredError(null);
+            showErrorMessage("Username and password do not match!");
         }
+    }
+    
+    public void showErrorMessage(String message) {
+        new Notification(message,
+            "Please try again!",
+            Notification.Type.TRAY_NOTIFICATION, true)
+            .show(Page.getCurrent());
     }
 
     @Override
