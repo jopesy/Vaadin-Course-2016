@@ -29,6 +29,7 @@ public class MainView extends CustomComponent implements View{
     private final Button loginButton;
     private final Button logoutButton;
     private final Button registerButton;
+    private final Button userPageButton;
     private final HorizontalLayout buttonContainer;
     
     public MainView() {
@@ -49,10 +50,16 @@ public class MainView extends CustomComponent implements View{
         registerButton.addClickListener( click -> {
             getUI().getNavigator().navigateTo(RegisterView.NAME);
         });
-        
+
+        userPageButton = new Button("My Page");
+        userPageButton.addClickListener(e-> {
+            getUI().getNavigator().navigateTo(UserView.NAME);
+        });
+        userPageButton.setVisible(false);
+
         buttonContainer = new HorizontalLayout();
         buttonContainer.setSpacing(true);
-        buttonContainer.addComponents(registerButton, loginButton, logoutButton);
+        buttonContainer.addComponents(registerButton, userPageButton, loginButton, logoutButton);
         
         
         navBarLayout.addComponents(userLabel, buttonContainer);
@@ -74,11 +81,13 @@ public class MainView extends CustomComponent implements View{
                 loginButton.setVisible(false);
                 logoutButton.setVisible(true);
                 registerButton.setVisible(false);
+                userPageButton.setVisible(true);
             }
             else {
                 loginButton.setVisible(true);
                 logoutButton.setVisible(false);
                 registerButton.setVisible(true);
+                userPageButton.setVisible(false);
             }
         }
         else {
