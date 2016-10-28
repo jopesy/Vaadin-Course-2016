@@ -45,14 +45,17 @@ public class RegisterView extends CustomComponent implements View{
         firstNameField = new TextField("First name:");
         firstNameField.setRequired(true);
         firstNameField.setInputPrompt("");
+        firstNameField.addValidator(new StringLengthValidator("First name length can be 25 characters at most!", 0, 25, true));
         
         lastNameField = new TextField("Last name:");
         lastNameField.setRequired(true);
         lastNameField.setInputPrompt("");
+        lastNameField.addValidator(new StringLengthValidator("Last name length can be 25 characters at most!", 0, 25, true));
         
         usernameField = new TextField("Username:");
         usernameField.setRequired(true);
         usernameField.setInputPrompt("Desired username");
+        usernameField.addValidator(new StringLengthValidator("Username length can be 45 characters at most!", 0, 45, true));
         usernameField.setInvalidAllowed(false);
         
         emailField = new TextField("Email address:");
@@ -62,7 +65,7 @@ public class RegisterView extends CustomComponent implements View{
         phoneNroField = new TextField("Phone number:");
         phoneNroField.setRequired(false);
         phoneNroField.addValidator(new RegexpValidator("\\d+", "Phone number must be digits only!"));
-        phoneNroField.addValidator(new StringLengthValidator("Phone number length must be between 10 and 12 digits!", 10, 12, true));
+        phoneNroField.addValidator(new StringLengthValidator("Phone number must not be longer than 12 digits!", 0, 12, true));
         phoneNroField.setValue(null);
         phoneNroField.setNullRepresentation("");
         
@@ -133,7 +136,7 @@ public class RegisterView extends CustomComponent implements View{
         }
         
         
-        // Check that all the field values (including email, if entered) are valid
+        // Check that all the field values (including phone number, if entered) are valid
         if(!emailField.isValid()) {
             showNotification("Oops!", "Please enter a valid email address!");
             return;
@@ -145,6 +148,9 @@ public class RegisterView extends CustomComponent implements View{
         }        
         if(!passwordField.isValid()){
             showNotification("Sorry!", "That password is not valid!");
+            return;
+        }
+        if(!phoneNroField.isEmpty() && !phoneNroField.isValid()) {
             return;
         }
         
