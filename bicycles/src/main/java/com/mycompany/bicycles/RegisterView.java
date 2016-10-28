@@ -27,7 +27,6 @@ import com.vaadin.ui.VerticalLayout;
  * Contains a simple form for logging in
  */
 public class RegisterView extends CustomComponent implements View{
-    private final DatabaseHelper dbconnection = new DatabaseHelper();
     public static final String NAME = "register";
     private final VerticalLayout layout;
     private final HorizontalLayout buttonContainer;
@@ -139,10 +138,10 @@ public class RegisterView extends CustomComponent implements View{
         }
         
         // Validate username, needs to be unique
-        boolean usernameAvailable = dbconnection.checkUsernameAvailability(username);
+        boolean usernameAvailable = DatabaseHelper.checkUsernameAvailability(username);
         
         if(usernameAvailable && valid){
-            dbconnection.addUser(firstname, lastname, username, email, phonenro, password);
+            DatabaseHelper.addUser(firstname, lastname, username, email, phonenro, password);
             registrationSuccess();
         }
         else {

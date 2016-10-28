@@ -30,7 +30,7 @@ import com.vaadin.ui.VerticalLayout;
  * Contains a simple form for logging in
  */
 public class LoginView extends CustomComponent implements View{
-    private final DatabaseHelper dbconnection = new DatabaseHelper();
+    //private final DatabaseHelper dbconnection = new DatabaseHelper();
     public static final String NAME = "login";
     private final VerticalLayout layout;
     private final HorizontalLayout buttonContainer;
@@ -110,7 +110,7 @@ public class LoginView extends CustomComponent implements View{
         }
         
         // Check if user exists in database
-        int userid = dbconnection.getUserId(username, password);
+        int userid = DatabaseHelper.getUserId(username, password);
         if(userid != -1) {
             isValid = true;
         }
