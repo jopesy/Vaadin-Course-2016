@@ -35,4 +35,17 @@
   @include valo;
 
   // Insert your own theme rules here
+  .bicycles-main {
+      background-image: url("bg1.jpg");
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-size: cover;
+      background-position: center center;
+  }
+  .login-panel, .register-panel {
+      margin-top: 80px;
+  }
+  .user-label, .v-caption-user-label {
+      color: white;
+  }
 }

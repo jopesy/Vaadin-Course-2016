@@ -37,6 +37,7 @@ public class MainView extends CustomComponent implements View{
         navBarLayout = new HorizontalLayout();
         userLabel = new Label("Not logged in");
         userLabel.setCaption("Logged in as:");
+        userLabel.setStyleName("user-label");
         loginButton = new Button("Log in");
         loginButton.addClickListener( e-> {
             getUI().getNavigator().navigateTo(LoginView.NAME);

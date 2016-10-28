@@ -91,6 +91,7 @@ public class RegisterView extends CustomComponent implements View{
         content.setSpacing(true);
         
         panel.setContent(content);
+        panel.setStyleName("register-panel");
         
         layout = new VerticalLayout();
         layout.addComponent(panel);

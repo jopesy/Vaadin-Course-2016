@@ -81,6 +81,7 @@ public class LoginView extends CustomComponent implements View{
         content.setComponentAlignment(registerButton, Alignment.MIDDLE_CENTER);
         
         panel.setContent(content);
+        panel.setStyleName("login-panel");
         
         layout = new VerticalLayout();
         layout.addComponent(panel);
