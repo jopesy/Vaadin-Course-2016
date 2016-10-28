@@ -10,6 +10,7 @@ import com.vaadin.data.util.sqlcontainer.connection.JDBCConnectionPool;
 import com.vaadin.data.util.sqlcontainer.connection.SimpleJDBCConnectionPool;
 import com.vaadin.data.util.sqlcontainer.query.FreeformQuery;
 import com.vaadin.data.util.sqlcontainer.query.TableQuery;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.*;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.navigator.View;
@@ -27,9 +28,7 @@ public class UserView extends CustomComponent implements View {
     private SQLContainer itemContainer;
     private SQLContainer bidContainer;
     private JDBCConnectionPool pool;
-    //private TableQuery tq;
     private int userid;
-
 
 
 
@@ -37,10 +36,9 @@ public class UserView extends CustomComponent implements View {
     public UserView(){
 
 
-        //Hakee tällä hetkellä userid 1 mukaan koska jostain syystä toi alempi koodinpätkä ei toimi,
-        //väittäen userid olevan object tyyppinen eikä int?
-        //userid = getSession().getAttribute("userid");
-        userid = 1;
+
+        userid = (int) VaadinSession.getCurrent().getSession().getAttribute("userid");
+        System.out.println(String.valueOf(VaadinSession.getCurrent().getSession().getAttribute("userid")));
 
         backToMainButton = new Button("Back");
         backToMainButton.addClickListener(e-> {
@@ -64,7 +62,6 @@ public class UserView extends CustomComponent implements View {
         //Queryt vaatii muokkausta vielä...
         try {
             pool = new SimpleJDBCConnectionPool("com.mysql.jdbc.Driver", "jdbc:mysql://localhost:3306/auctions?zeroDateTimeBehavior=convertToNull", "root", "root", 2, 5);
-            //tq = new TableQuery("items", pool);  helppo tapa hakea koko taulu
             FreeformQuery query1 = new FreeformQuery(
                     " SELECT * FROM items WHERE userid = " + userid, pool
             );

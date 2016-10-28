@@ -58,7 +58,7 @@ public class RegisterView extends CustomComponent implements View{
         emailField.setRequired(true);
         emailField.addValidator(new EmailValidator("Please enter a valid email address"));
         emailField.setInvalidAllowed(false);
-        
+
         phoneNroField = new TextField("Phone number:");
         phoneNroField.setRequired(false);
         

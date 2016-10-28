@@ -11,6 +11,7 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomComponent;
@@ -111,13 +112,13 @@ public class LoginView extends CustomComponent implements View{
         int userid = dbconnection.getUserId(username, password);
         if(userid != -1) {
             isValid = true;
-        }   
-        
+        }
+
         if(isValid){
-            getSession().setAttribute("username", username);
-            getSession().setAttribute("userid", userid);
+            VaadinSession.getCurrent().getSession().setAttribute("username", username);
+            VaadinSession.getCurrent().getSession().setAttribute("userid", userid);
             getUI().getNavigator().navigateTo(MainView.NAME);
-            
+
             new Notification("Logged in!",
                 "Hello, "+username+"!",
                 Notification.Type.TRAY_NOTIFICATION, true)

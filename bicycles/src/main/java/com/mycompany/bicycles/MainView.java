@@ -8,6 +8,7 @@ package com.mycompany.bicycles;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Page;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomComponent;
@@ -74,8 +75,8 @@ public class MainView extends CustomComponent implements View{
     public void enter(ViewChangeListener.ViewChangeEvent event) {
         String defaultText = "Not logged in";
         String username;
-        if(getSession().getAttribute("username") != null){
-            username = String.valueOf(getSession().getAttribute("username"));
+        if(VaadinSession.getCurrent().getSession().getAttribute("username") != null){
+            username = String.valueOf(VaadinSession.getCurrent().getSession().getAttribute("username"));
             if(!username.isEmpty()){
                 userLabel.setValue(username);
                 loginButton.setVisible(false);
@@ -97,7 +98,7 @@ public class MainView extends CustomComponent implements View{
     
     public void logout() {
         System.out.println("Log out");
-        getSession().setAttribute("username", null);
+        VaadinSession.getCurrent().getSession().setAttribute("username", null);
         userLabel.setValue("Not logged in");
         getUI().getNavigator().navigateTo(MainView.NAME);
         
