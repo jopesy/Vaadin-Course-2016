@@ -62,7 +62,7 @@ public class RegisterView extends CustomComponent implements View{
         phoneNroField = new TextField("Phone number:");
         phoneNroField.setRequired(false);
         phoneNroField.addValidator(new RegexpValidator("\\d+", "Phone number must be digits only!"));
-        phoneNroField.addValidator(new StringLengthValidator("Phone number length must not be longer than 12 digits!", 10, 12, true));
+        phoneNroField.addValidator(new StringLengthValidator("Phone number length must be between 10 and 12 digits!", 10, 12, true));
         phoneNroField.setValue(null);
         phoneNroField.setNullRepresentation("");
         
@@ -114,19 +114,28 @@ public class RegisterView extends CustomComponent implements View{
         String password = passwordField.getValue();
         
         TextField[] reqFields = {firstNameField, lastNameField, emailField, usernameField};
+        boolean formFilled = true;
         
+        // Check that all the required fields are filled
         for (TextField field : reqFields) {
             if(field.isEmpty()) {
-                showErrorMessage("Please fill out all the required fields!");
-                return;
+                formFilled = false;
+                field.setRequiredError("Please fill out this field");
             }
         }
         if(passwordField.isEmpty()){
-            showErrorMessage("Please fill out all the required fields!");
+            formFilled = false;
+            passwordField.setRequiredError("Please enter your password");
+        }       
+        if(!formFilled) {
+            showNotification("Oops!", "Please fill out all the required fields!");
             return;
-        }        
+        }
+        
+        
+        // Check that all the field values (including email, if entered) are valid
         if(!emailField.isValid()) {
-            showErrorMessage("Please enter a valid email address!");
+            showNotification("Oops!", "Please enter a valid email address!");
             return;
         }        
         for(TextField field : reqFields){
@@ -135,7 +144,7 @@ public class RegisterView extends CustomComponent implements View{
             }
         }        
         if(!passwordField.isValid()){
-            showErrorMessage("That password is not valid!");
+            showNotification("Sorry!", "That password is not valid!");
             return;
         }
         
@@ -147,25 +156,17 @@ public class RegisterView extends CustomComponent implements View{
             registrationSuccess();
         }
         else {
-            showErrorMessage("That username is already taken!");
+            showNotification("Sorry!", "That username is already taken!");
         }
     }
     
     private void registrationSuccess() {
         getUI().getNavigator().navigateTo(LoginView.NAME);
-        showSuccessMessage();
+        showNotification("Thank you for registering!", "You can now log in.");
     }
     
-    private void showSuccessMessage() {
-        new Notification("Thank you for registering!",
-            "You can now log in using your credentials.",
-            Notification.Type.TRAY_NOTIFICATION, true)
-            .show(Page.getCurrent());
-    }
-    
-    private void showErrorMessage(String message) {
-        new Notification("Error!",
-            message,
+    private void showNotification(String caption, String message) {
+        new Notification(caption, message,
             Notification.Type.TRAY_NOTIFICATION, true)
             .show(Page.getCurrent());
     }
