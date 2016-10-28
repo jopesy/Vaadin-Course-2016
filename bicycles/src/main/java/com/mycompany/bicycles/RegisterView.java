@@ -5,7 +5,10 @@
  */
 package com.mycompany.bicycles;
 
+import com.vaadin.data.validator.AbstractValidator;
 import com.vaadin.data.validator.EmailValidator;
+import com.vaadin.data.validator.RegexpValidator;
+import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -56,14 +59,17 @@ public class RegisterView extends CustomComponent implements View{
         emailField = new TextField("Email address:");
         emailField.setRequired(true);
         emailField.addValidator(new EmailValidator("Please enter a valid email address"));
-        emailField.setInvalidAllowed(false);
 
         phoneNroField = new TextField("Phone number:");
         phoneNroField.setRequired(false);
+        phoneNroField.addValidator(new RegexpValidator("\\d+", "Phone number must be digits only!"));
+        phoneNroField.addValidator(new StringLengthValidator("Phone number length must not be longer than 12 digits!", 10, 12, true));
+        phoneNroField.setValue(null);
+        phoneNroField.setNullRepresentation("");
         
         passwordField = new PasswordField("Password:");
         passwordField.setRequired(true);
-        // TODO: Add password validator
+        passwordField.addValidator(new PasswordValidator());
         passwordField.setValue("");
         
         submitButton = new Button("Sign up");
@@ -112,32 +118,29 @@ public class RegisterView extends CustomComponent implements View{
         
         for (TextField field : reqFields) {
             if(field.isEmpty()) {
-                valid = false;
                 showErrorMessage("Please fill out all the required fields!");
-                field.setRequiredError("Please fill out this field");
                 return;
             }
         }
         if(passwordField.isEmpty()){
-            valid = false;
             showErrorMessage("Please fill out all the required fields!");
-            passwordField.setRequiredError("Please enter your password");
             return;
-        }
-        
+        }        
+        if(!emailField.isValid()) {
+            showErrorMessage("Please enter a valid email address!");
+            return;
+        }        
         for(TextField field : reqFields){
             if(!field.isValid()){
-                valid = false;
                 return;
             }
-        }
+        }        
         if(!passwordField.isValid()){
-            valid = false;
             showErrorMessage("That password is not valid!");
             return;
         }
         
-        // Validate username, needs to be unique
+        // Username needs to be unique
         boolean usernameAvailable = DatabaseHelper.checkUsernameAvailability(username);
         
         if(usernameAvailable && valid){
@@ -155,7 +158,7 @@ public class RegisterView extends CustomComponent implements View{
     }
     
     private void showSuccessMessage() {
-        new Notification("Registration completed!",
+        new Notification("Thank you for registering!",
             "You can now log in using your credentials.",
             Notification.Type.TRAY_NOTIFICATION, true)
             .show(Page.getCurrent());

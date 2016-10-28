@@ -30,7 +30,6 @@ import com.vaadin.ui.VerticalLayout;
  * Contains a simple form for logging in
  */
 public class LoginView extends CustomComponent implements View{
-    //private final DatabaseHelper dbconnection = new DatabaseHelper();
     public static final String NAME = "login";
     private final VerticalLayout layout;
     private final HorizontalLayout buttonContainer;
@@ -48,7 +47,6 @@ public class LoginView extends CustomComponent implements View{
         
         passwordField = new PasswordField("Password:");
         passwordField.setRequired(true);
-        // TODO: Add password validator
         passwordField.setValue("");
         
         submitButton = new Button("Login");
