@@ -38,7 +38,7 @@ public class UserView extends CustomComponent implements View {
 
 
         userid = (int) VaadinSession.getCurrent().getSession().getAttribute("userid");
-        System.out.println(String.valueOf(VaadinSession.getCurrent().getSession().getAttribute("userid")));
+
 
         backToMainButton = new Button("Back");
         backToMainButton.addClickListener(e-> {
