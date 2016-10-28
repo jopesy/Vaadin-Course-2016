@@ -11,15 +11,15 @@ import java.sql.*;
 public class DatabaseHelper {
     
     //Lisää käyttäjä
-    static void addUser(String firstname, String lastname, String username, String email, String phonenro, String password){
-    try{
+    static void addUser(String firstname, String lastname, String username, String email, String phonenro, String password){    
+        try{
         Class.forName("com.mysql.jdbc.Driver");  
         Connection con=DriverManager.getConnection(  
         "jdbc:mysql://localhost:3306/auctions?zeroDateTimeBehavior=convertToNull", "root", "root");  
         //Määrittelee yhteyden databaseen ja yhdistää
 
         //SQL queryn määrittely
-        PreparedStatement stmt = con.prepareStatement("INSERT INTO users(firstname, lastname, email, phone, password, username) VALUES(?,?,?,?,?,?)");
+        PreparedStatement stmt = con.prepareStatement("INSERT INTO users(firstname, lastname, email, phone, password, username) VALUES(?,?,?,?,md5(?),?)");
         //Jokaisen queryn ? merkin kohdalle määritellään arvo aiemmin määritettyjen muuttujien mukaan
         stmt.setString(1,firstname);
         stmt.setString(2,lastname);
@@ -71,12 +71,13 @@ static boolean checkUsernameAvailability(String username) {
 //Palauttaa userid:n, tai -1:n mikäli käyttäjää ei löydy tietokannasta
 static int getUserId(String username, String password) {
     int userid = -1;
+    
     try{
         Class.forName("com.mysql.jdbc.Driver");  
         Connection con=DriverManager.getConnection(  
         "jdbc:mysql://localhost:3306/auctions?zeroDateTimeBehavior=convertToNull", "root", "root");
         
-        PreparedStatement stmt = con.prepareStatement("SELECT * FROM users WHERE username=? AND password=?"); //Query
+        PreparedStatement stmt = con.prepareStatement("SELECT * FROM users WHERE username=? AND password=md5(?)"); //Query
         stmt.setString(1,username);
         stmt.setString(2,password);
         ResultSet rs = stmt.executeQuery();
