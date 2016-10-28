@@ -30,7 +30,7 @@ import com.vaadin.ui.VerticalLayout;
  * Contains a simple form for logging in
  */
 public class LoginView extends CustomComponent implements View{
-    private final DatabaseHelper dbconnection = new DatabaseHelper();
+//    private final DatabaseHelper dbconnection = new DatabaseHelper();
     public static final String NAME = "login";
     private final VerticalLayout layout;
     private final HorizontalLayout buttonContainer;
@@ -110,14 +110,16 @@ public class LoginView extends CustomComponent implements View{
         }
         
         // Check if user exists in database
-        int userid = dbconnection.getUserId(username, password);
-        if(userid != -1) {
-            isValid = true;
-        }
+
+        
+      
+            isValid = DatabaseHelper2.validateLogin(username, password);
+        
 
         if(isValid){
+//            int userid = DatabaseHelper2.getUser(username);
             VaadinSession.getCurrent().getSession().setAttribute("username", username);
-            VaadinSession.getCurrent().getSession().setAttribute("userid", userid);
+//            VaadinSession.getCurrent().getSession().setAttribute("userid", userid); //TODO
             getUI().getNavigator().navigateTo(MainView.NAME);
 
             new Notification("Logged in!",

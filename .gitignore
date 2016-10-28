@@ -10,3 +10,14 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+bicycles/.settings/org.eclipse.jdt.core.prefs
+bicycles/.settings/org.eclipse.m2e.core.prefs
+bicycles/.settings/org.eclipse.wst.common.component
+bicycles/.settings/org.eclipse.wst.common.project.facet.core.xml
+bicycles/.settings/org.eclipse.wst.jsdt.ui.superType.container
+bicycles/.settings/org.eclipse.wst.jsdt.ui.superType.name
+bicycles/.settings/org.eclipse.wst.validation.prefs
+bicycles/src/main/webapp/VAADIN/themes/mytheme/styles.css
+bicycles/.classpath
+bicycles/.settings/.jsdtscope
+bicycles/.settings/org.eclipse.core.resources.prefs
