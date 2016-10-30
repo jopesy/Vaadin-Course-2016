@@ -95,9 +95,10 @@
       }
   }
   .auction-form {
-      .v-window-header, .v-window-maximizebox, .v-window-closebox {
+      .auction-form-panel, .v-window-header, .v-window-maximizebox, .v-window-closebox, .v-window-restorebox {
           background: none;
           color: white;
+          border: none;
       }
       .v-window-header {
           color: #99d6ff;

@@ -77,6 +77,15 @@ public class MainView extends CustomComponent implements View{
         createAuctionWindow.setContent(auctionContainer);
         createAuctionWindow.center();
         createAuctionWindow.setStyleName("auction-form");
+        
+        Panel panel = new Panel();
+        panel.setSizeUndefined();
+        FormLayout content = new FormLayout();
+        content.setMargin(true);
+        content.setSpacing(true);
+        
+        panel.setContent(content);
+        panel.setStyleName("auction-form-panel");
 
         openCreationWindow = new Button("Create Auction");
         openCreationWindow.addClickListener( h -> {
@@ -84,18 +93,18 @@ public class MainView extends CustomComponent implements View{
         });
         openCreationWindow.setVisible(false);
 
-        bikeBrand = new TextField();
+        bikeBrand = new TextField("Brand:");
         bikeBrand.setRequired(true);
 
-        bikeModel = new TextField();
+        bikeModel = new TextField("Model:");
         bikeModel.setRequired(true);
 
-        bikeDescription = new TextField();
-        startingPrice = new TextField();
+        bikeDescription = new TextField("Description:");
+        startingPrice = new TextField("Starting price:");
         startingPrice.setRequired(true);
 
-        buyoutPrice = new TextField();
-        endingDate = new PopupDateField();
+        buyoutPrice = new TextField("Buyout price:");
+        endingDate = new PopupDateField("Endind date:");
 
         closeButton = new Button("Close");
         closeButton.addClickListener( click -> {
@@ -116,9 +125,10 @@ public class MainView extends CustomComponent implements View{
 
         endingDate.setResolution(Resolution.MINUTE);
 
+        content.addComponents(bikeBrand, bikeModel, bikeDescription, startingPrice, buyoutPrice, endingDate,  buttonContainer2);
 
-
-        auctionContainer.addComponents(new Label("Bike Brand"), bikeBrand, new Label("Bike Model"), bikeModel, new Label("Description"),bikeDescription, new Label("Starting Price"), startingPrice, new Label("Buyout price(optional)"),buyoutPrice, new Label("Select ending Date"),  endingDate,  buttonContainer2);
+        auctionContainer.addComponent(panel);
+        auctionContainer.setComponentAlignment(panel, Alignment.MIDDLE_CENTER);
 
         buttonContainer = new HorizontalLayout();
         buttonContainer.setSpacing(true);
