@@ -29,6 +29,7 @@ public class MainView extends CustomComponent implements View{
     private final Button registerButton;
     private final Button userPageButton;
     private final HorizontalLayout buttonContainer;
+    
     private final HorizontalLayout buttonContainer2;
     private final Button openCreationWindow;
     private Window createAuctionWindow;
@@ -75,6 +76,7 @@ public class MainView extends CustomComponent implements View{
         auctionContainer.setMargin(true);
         createAuctionWindow.setContent(auctionContainer);
         createAuctionWindow.center();
+        createAuctionWindow.setStyleName("auction-form");
 
         openCreationWindow = new Button("Create Auction");
         openCreationWindow.addClickListener( h -> {

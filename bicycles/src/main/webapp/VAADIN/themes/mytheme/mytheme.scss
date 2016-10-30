@@ -86,11 +86,20 @@
           color: black;
       }
   }
-  .v-Notification {
+  .v-Notification, .auction-form {
       background: rgba(0,0,0,0.6);
       border: 1px solid rgba(255,255,255,0.6);
       color: white;
       .v-Notification-caption {
+          color: #99d6ff;
+      }
+  }
+  .auction-form {
+      .v-window-header, .v-window-maximizebox, .v-window-closebox {
+          background: none;
+          color: white;
+      }
+      .v-window-header {
           color: #99d6ff;
       }
   }
