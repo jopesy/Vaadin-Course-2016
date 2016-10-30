@@ -90,30 +90,22 @@ static int getUserId(String username, String password) {
 }
 
 //Lisää esine ja sen kuva
-static void addItem(){
+static void addItem(String brand, String model, String descr, int userid, int buynow, int startprice, String enddate){
     try{
         Class.forName("com.mysql.jdbc.Driver");  
         Connection con=DriverManager.getConnection(  
         "jdbc:mysql://localhost:3306/auctions?zeroDateTimeBehavior=convertToNull", "root", "root");
+
         
-        String brand = "Helkama";
-        String model = "Jopo";
-        String descr = "Hieno Jopo.";
-        String userid = "5";
-        String buynow = null;
-        String startprice = "20.25";
-        String enddate = "2016-12-20";
-        String photoid = null;
-        
-        PreparedStatement stmt = con.prepareStatement("INSERT INTO items(brand, model, descr, userid, buynow, startprice, enddate, photoid) VALUES(?,?,?,?,?,?,?,?)");
+        PreparedStatement stmt = con.prepareStatement("INSERT INTO items(brand, model, descr, userid, buynow, startprice, enddate) VALUES(?,?,?,?,?,?,?)");
         stmt.setString(1,brand);
         stmt.setString(2,model);
         stmt.setString(3,descr);
-        stmt.setString(4,userid);
-        stmt.setString(5,buynow);
-        stmt.setString(6,startprice);
+        stmt.setInt(4,userid);
+        stmt.setInt(5,buynow);
+        stmt.setInt(6,startprice);
         stmt.setString(7, enddate);
-        stmt.setString(8, photoid);
+        // stmt.setString(8, photoid);
         stmt.executeUpdate();
         
         String phototype = ".jpg";

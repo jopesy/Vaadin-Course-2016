@@ -9,12 +9,10 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinSession;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
+import com.vaadin.shared.ui.datefield.Resolution;
+import com.vaadin.ui.*;
+
+import java.util.Date;
 
 /**
  *
@@ -31,6 +29,18 @@ public class MainView extends CustomComponent implements View{
     private final Button registerButton;
     private final Button userPageButton;
     private final HorizontalLayout buttonContainer;
+    private final HorizontalLayout buttonContainer2;
+    private final Button openCreationWindow;
+    private Window createAuctionWindow;
+    private final VerticalLayout auctionContainer;
+    private final Button closeButton;
+    private final Button createAuction;
+    private TextField bikeBrand;
+    private TextField bikeModel;
+    private TextField bikeDescription;
+    private TextField startingPrice;
+    private TextField buyoutPrice;
+    private PopupDateField endingDate;
     
     public MainView() {
         navBarLayout = new HorizontalLayout();
@@ -44,6 +54,7 @@ public class MainView extends CustomComponent implements View{
         });
         logoutButton = new Button("Log out");
         logoutButton.addClickListener( click -> {
+            getUI().removeWindow(createAuctionWindow);
             logout();
         });
         logoutButton.setVisible(false);
@@ -59,9 +70,57 @@ public class MainView extends CustomComponent implements View{
         });
         userPageButton.setVisible(false);
 
+        createAuctionWindow = new Window("Create Auction");
+        auctionContainer = new VerticalLayout();
+        auctionContainer.setMargin(true);
+        createAuctionWindow.setContent(auctionContainer);
+        createAuctionWindow.center();
+
+        openCreationWindow = new Button("Create Auction");
+        openCreationWindow.addClickListener( h -> {
+            getUI().addWindow(createAuctionWindow);
+        });
+        openCreationWindow.setVisible(false);
+
+        bikeBrand = new TextField();
+        bikeBrand.setRequired(true);
+
+        bikeModel = new TextField();
+        bikeModel.setRequired(true);
+
+        bikeDescription = new TextField();
+        startingPrice = new TextField();
+        startingPrice.setRequired(true);
+
+        buyoutPrice = new TextField();
+        endingDate = new PopupDateField();
+
+        closeButton = new Button("Close");
+        closeButton.addClickListener( click -> {
+            getUI().removeWindow(createAuctionWindow);
+        });
+
+
+
+        createAuction = new Button("Create Auction");
+        createAuction.addClickListener( click -> {
+            validateInput();
+            getUI().removeWindow(createAuctionWindow);
+        });
+
+        buttonContainer2 = new HorizontalLayout();
+        buttonContainer2.setSpacing(true);
+        buttonContainer2.addComponents(createAuction, closeButton);
+
+        endingDate.setResolution(Resolution.MINUTE);
+
+
+
+        auctionContainer.addComponents(new Label("Bike Brand"), bikeBrand, new Label("Bike Model"), bikeModel, new Label("Description"),bikeDescription, new Label("Starting Price"), startingPrice, new Label("Buyout price(optional)"),buyoutPrice, new Label("Select ending Date"),  endingDate,  buttonContainer2);
+
         buttonContainer = new HorizontalLayout();
         buttonContainer.setSpacing(true);
-        buttonContainer.addComponents(registerButton, userPageButton, loginButton, logoutButton);
+        buttonContainer.addComponents(registerButton, userPageButton,openCreationWindow, loginButton, logoutButton);
         
         
         navBarLayout.addComponents(userLabel, buttonContainer);
@@ -84,12 +143,14 @@ public class MainView extends CustomComponent implements View{
                 logoutButton.setVisible(true);
                 registerButton.setVisible(false);
                 userPageButton.setVisible(true);
+                openCreationWindow.setVisible(true);
             }
             else {
                 loginButton.setVisible(true);
                 logoutButton.setVisible(false);
                 registerButton.setVisible(true);
                 userPageButton.setVisible(false);
+                openCreationWindow.setVisible(false);
             }
         }
         else {
@@ -108,5 +169,46 @@ public class MainView extends CustomComponent implements View{
             Notification.Type.TRAY_NOTIFICATION, true)
             .show(Page.getCurrent());
     }
+
+    private void validateInput(){
+        String brand = bikeBrand.getValue();
+        String model = bikeModel.getValue();
+        String descr = bikeDescription.getValue();
+        int userid = (int) VaadinSession.getCurrent().getSession().getAttribute("userid");
+        int buynow = Integer.parseInt(buyoutPrice.getValue());
+        int startprice = Integer.parseInt(startingPrice.getValue());
+        Date enddate = endingDate.getValue();
+        String edate = toString(enddate);
+
+
+        TextField[] reqFields = {bikeBrand, startingPrice};
+        boolean formFilled = true;
+
+        // Check that all the required fields are filled
+        for (TextField field : reqFields) {
+            if(field.isEmpty()) {
+                formFilled = false;
+                field.setRequiredError("Please fill out this field");
+            }
+        }
+        if(!formFilled) {
+            showNotification("Oops!", "Please fill out all the required fields!");
+            return;
+        }else{
+            DatabaseHelper.addItem(brand,model,descr,userid,buynow,startprice,edate);
+        }
+    }
+
+    private void showNotification(String caption, String message) {
+        new Notification(caption, message,
+                Notification.Type.TRAY_NOTIFICATION, true)
+                .show(Page.getCurrent());
+    }
+
+    private String toString(Date date){
+        return date.getYear()+1900 + "-" + (date.getMonth()+1) + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":" + "00";
+    }
+
+
     
 }
