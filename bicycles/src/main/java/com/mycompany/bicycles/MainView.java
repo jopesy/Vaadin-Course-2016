@@ -34,6 +34,7 @@ public class MainView extends CustomComponent implements View{
     
     public MainView() {
         navBarLayout = new HorizontalLayout();
+        navBarLayout.addStyleName("navbar");
         userLabel = new Label("Not logged in");
         userLabel.setCaption("Logged in as:");
         userLabel.setStyleName("user-label");

@@ -36,16 +36,62 @@
 
   // Insert your own theme rules here
   .bicycles-main {
-      background-image: url("bg1.jpg");
+      background-image: url("images/bg5.jpg");
       background-repeat: no-repeat;
       background-attachment: fixed;
       background-size: cover;
       background-position: left top;
   }
-  .login-panel, .register-panel {
-      margin-top: 80px;
-  }
-  .user-label, .v-caption-user-label {
+  .navbar {
+      height: 100px;
       color: white;
+  }
+  .login-panel, .register-panel {
+      background: rgba(0,0,0, 0.6);
+      color: white;
+      margin-top: 80px;
+      .v-panel-caption {
+        background: rgba(255,255,255,0.15); 
+        color: #99d6ff;
+        font-size: 20px;
+        text-align: center;
+        border: none;
+        height: 0;
+        margin-top: 15px;
+        margin-bottom: 20px;
+      }
+  }
+  .v-slot-user-label {
+      margin-top: -12px;
+      .user-label, .v-caption-user-label {
+          color: white;
+          font-size: 18px;
+          text-shadow: 1px 1px grey;
+      }
+      .user-label {
+          font-size: 20px;
+      }
+  }
+  
+  .v-button {
+      background: rgba(0,0,0,0.2);
+      border: 1px solid white;
+      border-radius: 8px;
+      color: white;
+      &:hover {
+          background: rgba(255,255,255,0.3);
+      }
+      &:active {
+          background: white;
+          color: black;
+      }
+  }
+  .v-Notification {
+      background: rgba(0,0,0,0.6);
+      border: 1px solid rgba(255,255,255,0.6);
+      color: white;
+      .v-Notification-caption {
+          color: #99d6ff;
+      }
   }
 }
