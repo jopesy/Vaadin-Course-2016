@@ -114,6 +114,7 @@ public class MainView extends CustomComponent implements View{
             auctionContainer.setComponentAlignment(panel, Alignment.MIDDLE_CENTER);
             getUI().addWindow(createAuctionWindow);
             navBarLayout.setVisible(false);
+            items.setVisible(false);
         });
         openCreationWindow.setVisible(false);
         openCreationWindow.setStyleName("new-auction-window-button");
@@ -199,6 +200,7 @@ public class MainView extends CustomComponent implements View{
         closeButton.addClickListener( click -> {
             getUI().removeWindow(createAuctionWindow);
             navBarLayout.setVisible(true);
+            items.setVisible(true);
         });
 
 
@@ -210,7 +212,11 @@ public class MainView extends CustomComponent implements View{
             if(formValid) {
                 getUI().removeWindow(createAuctionWindow);
                 navBarLayout.setVisible(true);
+
                 upload.setVisible(true);
+
+                items.setVisible(true);
+
             }
             else return;
         });
@@ -368,6 +374,9 @@ public class MainView extends CustomComponent implements View{
         items.setColumnCollapsingAllowed(true);
         items.setColumnCollapsed("makebid", true);
         
+        items.setPageLength(0);
+        items.setStyleName("table-items");
+        
         for(AuctionItem ai : list){
         	if(ai.getActive()==0)continue; 
 	        Object it =  items.addItem();
@@ -403,6 +412,7 @@ public class MainView extends CustomComponent implements View{
                         showNotification("Success!", "You have placed a new bid");
 	        });
 	        vl.addComponent(bid);
+                vl.setSpacing(true);
 	        p1.setValue(vl);
 	//test
         }
