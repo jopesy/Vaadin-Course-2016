@@ -340,6 +340,9 @@ public class MainView extends CustomComponent implements View{
         items.setColumnCollapsingAllowed(true);
         items.setColumnCollapsed("makebid", true);
         
+        items.setPageLength(0);
+        items.setStyleName("table-items");
+        
         for(AuctionItem ai : list){
         	if(ai.getActive()==0)continue; 
 	        Object it =  items.addItem();

@@ -178,6 +178,10 @@ public class UserView extends CustomComponent implements View {
         items.addContainerProperty("starting", Double.class, 0.0);
         items.addContainerProperty("end",Date.class,null);
         items.addContainerProperty("delete", Button.class, null);
+        
+        items.setPageLength(0);
+        items.setStyleName("table-items");
+        
 
         for(AuctionItem ai : list){
         	if(ai.getActive()==0)continue; 
