@@ -140,7 +140,9 @@ public class UserView extends CustomComponent implements View {
 	        p1 =(Property) item.getItemProperty("end");
 	        p1.setValue(ai.getEnddate());
 	        p1=(Property)item.getItemProperty("delete");
-	        p1.setValue(new Button("Delete"));
+                Button del = new Button("Delete");
+                del.setStyleName("button-delete");
+	        p1.setValue(del);
 	
         }
        }
@@ -158,6 +160,9 @@ public class UserView extends CustomComponent implements View {
     	bids.addContainerProperty("starting", Double.class, 0.0);
     	bids.addContainerProperty("end",Date.class,null);
     	bids.addContainerProperty("yourbid",Double.class, 0.0);
+        
+        bids.setPageLength(0);
+        bids.setStyleName("table-bids");
         
         
 
