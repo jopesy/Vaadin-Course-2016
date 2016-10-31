@@ -5,22 +5,34 @@
  */
 package com.mycompany.bicycles;
 
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.Page;
-import com.vaadin.server.VaadinSession;
-import com.vaadin.server.WebBrowser;
-import com.vaadin.shared.ui.datefield.Resolution;
-import com.vaadin.ui.*;
-import com.vaadin.data.validator.StringLengthValidator;
+import java.util.ArrayList;
+import java.util.Date;
+
 import com.mycompany.bicycles.utilities.AuctionItem;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.validator.RegexpValidator;
+import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.event.ShortcutAction;
-
-import java.util.ArrayList;
-import java.util.Date;
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.Page;
+import com.vaadin.server.VaadinSession;
+import com.vaadin.shared.ui.datefield.Resolution;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Image;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.PopupDateField;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
 /**
  *
@@ -96,7 +108,7 @@ public class MainView extends CustomComponent implements View{
 
         panel.setContent(content);
         panel.setStyleName("auction-form-panel");
-
+        addItems(DatabaseHelper.listAllItems());
         openCreationWindow = new Button("+ New Auction");
         openCreationWindow.addClickListener( h -> {
             getUI().addWindow(createAuctionWindow);
@@ -308,8 +320,8 @@ public class MainView extends CustomComponent implements View{
         items.addContainerProperty("current", Double.class, 0.0,"Highest bid:",null,null);
         items.addContainerProperty("starting", Double.class, 0.0,"Starting price:", null,null);
         items.addContainerProperty("end",Date.class,null,"Auction ends:",null,null);
-        items.addContainerProperty("makebid", Button.class, null,"",null,null);
-
+        items.addContainerProperty("makebid", VerticalLayout.class, null,"",null,null);
+        
         for(AuctionItem ai : list){
         	if(ai.getActive()==0)continue; 
 	        Object it =  items.addItem();
@@ -332,7 +344,17 @@ public class MainView extends CustomComponent implements View{
 	        p1 =(Property) item.getItemProperty("end");
 	        p1.setValue(ai.getEnddate());
 	        p1=(Property)item.getItemProperty("makebid");
-	        p1.setValue(new Button("Place bid"));
+	        
+	        VerticalLayout vl=new VerticalLayout();
+	        TextField in = new TextField();
+	     
+	        vl.addComponent(in);
+	        Button bid = new Button("Place bid");
+	        bid.addClickListener(e->{
+	        	DatabaseHelper.addBid(ai.getItemid(), ai.getUserid(), (Double.parseDouble(in.getValue())));
+	        });
+	        vl.addComponent(bid);
+	        p1.setValue(vl);
 	
         }
        }

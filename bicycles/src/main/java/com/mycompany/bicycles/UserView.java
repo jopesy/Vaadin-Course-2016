@@ -80,7 +80,7 @@ public class UserView extends CustomComponent implements View {
 //            FreeformQuery query1 = new FreeformQuery(
 //                    "SELECT photoid as Photo, brand as Brand, model as Model, descr as Description, buynow as 'Buy now price', startprice as 'Starting price', enddate as 'End date', MAX(bid) as 'Highest bid' FROM items AS i LEFT JOIN photos AS p ON i.itemid=p.itemid LEFT JOIN bids AS b ON i.itemid=b.itemid WHERE i.userid=" + userid + " GROUP BY i.itemid, p.photoid", pool
 //            );
-            addItems(DatabaseHelper.listAllItems());
+            addItems(DatabaseHelper.listUsersItems());
 //            FreeformQuery query2 = new FreeformQuery(
 //                    "SELECT photoid as Photo, brand as Brand, model as Model, descr as Description, buynow as 'Buy now price', startprice as 'Starting price', enddate as 'End date', MAX(bid) as 'My bid' FROM items AS i LEFT JOIN photos AS p ON i.itemid=p.itemid LEFT JOIN bids AS b ON i.itemid=b.itemid WHERE b.userid=" + userid + " GROUP BY i.itemid, p.photoid", pool
 //            );

@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import com.mycompany.bicycles.utilities.AuctionItem;
 //Importtaa koko javan sql libraryn
 import com.vaadin.server.StreamResource;
+import com.vaadin.server.VaadinSession;
+import com.vaadin.server.VaadinPortlet.VaadinGateInRequest;
 import com.vaadin.ui.Image;
 
 
@@ -156,18 +158,16 @@ static void deleteItem(){
 }
 
 //Lisää tarjous
-static void addBid(){
+static void addBid(int itemid,int userid,double bid){
     try{Class.forName("com.mysql.jdbc.Driver");  
         Connection con=DriverManager.getConnection(  
         "jdbc:mysql://localhost:3306/auctions?zeroDateTimeBehavior=convertToNull", "root", "root");
        
-        String itemid = "";
-        String userid = "";
-        String bid = "";
+
         PreparedStatement stmt = con.prepareStatement("INSERT INTO bids(itemid, userid, bid) VALUES (?,?,?)");
-        stmt.setString(1, itemid);
-        stmt.setString(2, userid);
-        stmt.setString(3, bid);
+        stmt.setInt(1, itemid);
+        stmt.setInt(2, userid);
+        stmt.setDouble(3, bid);
         stmt.executeUpdate();
         con.close();
     }catch(Exception e){ System.out.println(e);}
@@ -405,16 +405,25 @@ static ArrayList<AuctionItem> listAllItems(){
 	return items;
 }
 
+static ArrayList<Bid> listUsersBids(){
+//   String query = "SELECT photoid as Photo, brand as Brand, model as Model, descr as Description, buynow as 'Buy now price', startprice as 'Starting price', enddate as 'End date', MAX(bid) as 'My bid' FROM items AS i LEFT JOIN photos AS p ON i.itemid=p.itemid LEFT JOIN bids AS b ON i.itemid=b.itemid WHERE b.userid=? GROUP BY i.itemid, p.photoid;"
+//  
+		return null;   
+}
+
 
 static ArrayList<AuctionItem> listUsersItems(){
 	ArrayList<AuctionItem> items = new ArrayList<AuctionItem>();
 	
-	String query = "SELECT i.itemid,brand , model, descr , buynow, startprice, enddate,active, MAX(bid) as bid FROM items AS i LEFT JOIN photos AS p ON i.itemid=p.itemid LEFT JOIN bids AS b ON i.itemid=b.itemid GROUP BY i.itemid, p.photoid";
+	String query = "SELECT i.itemid,i.userid,brand , model, descr , buynow, startprice, enddate,active, MAX(bid) as bid FROM items AS i LEFT JOIN photos AS p ON i.itemid=p.itemid LEFT JOIN bids AS b ON i.itemid=b.itemid WHERE i.userid=? GROUP BY i.itemid, p.photoid";
 	
 	try(Connection c = getConnection();
 		PreparedStatement ps = c.prepareStatement(query);
 //			ps.setInt(1, );
 			){
+		
+		ps.setInt(1, (int)VaadinSession.getCurrent().getSession().getAttribute("userid"));
+		
 		
 		ResultSet rs = ps.executeQuery();
 		
@@ -448,7 +457,7 @@ static ArrayList<AuctionItem> listUsersItems(){
 	
 	return items;
 }
-
+ 
 private static Connection getConnection(){
 	
 	try {
