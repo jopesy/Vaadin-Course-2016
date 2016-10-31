@@ -117,7 +117,12 @@
   }
   .v-table, .v-table-header-wrap {
       background: rgba(0,0,0,0.8);
-      color: white;
+      td {
+          color: black;
+      }
+      .v-table-header-cell {
+          color: white;
+      }
   }
   
 }
