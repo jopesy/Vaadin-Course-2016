@@ -85,6 +85,13 @@
           background: white;
           color: black;
       }
+      &.button-bid {
+          background: black;
+          &:hover, &:hover {
+              background: #99d6ff;
+              color: white;
+          }
+      }
   }
   .v-Notification, .auction-form {
       background: rgba(0,0,0,0.6);
@@ -120,7 +127,7 @@
       .cell-wrapper {
           color: black;
       }
-      .v-table-header-cell {
+      .v-table-header-cell, .v-table-header-cell-asc, .v-table-header-cell-desc {
           color: white;
       }
   }

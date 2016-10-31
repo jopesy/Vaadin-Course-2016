@@ -354,6 +354,7 @@ public class MainView extends CustomComponent implements View{
 	     
 	        vl.addComponent(in);
 	        Button bid = new Button("Place bid");
+                bid.addStyleName("button-bid");
 	        bid.addClickListener(e->{
 	        	int a= (int) VaadinSession.getCurrent().getSession().getAttribute("userid");
 	        	DatabaseHelper.addBid(ai.getItemid(),a , (Double.parseDouble(in.getValue())));
