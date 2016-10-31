@@ -5,9 +5,15 @@
  */
 package com.mycompany.bicycles;
 
-//Importtaa koko javan sql libraryn
-import java.io.InputStream;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+
+import com.mycompany.bicycles.utilities.AuctionItem;
 
 public class DatabaseHelper {
     
@@ -338,6 +344,70 @@ static void getUsersBids(){
         }
         con.close();
     }catch(Exception e){ System.out.println(e);}
+}
+
+static ArrayList<AuctionItem> listAllItems(){
+	ArrayList<AuctionItem> items = new ArrayList<AuctionItem>();
+	
+	String query = "SELECT i.itemid,brand , model, descr , buynow, startprice, enddate,active, MAX(bid) as bid FROM items AS i LEFT JOIN photos AS p ON i.itemid=p.itemid LEFT JOIN bids AS b ON i.itemid=b.itemid GROUP BY i.itemid, p.photoid";
+	
+	try(Connection c = getConnection();
+		PreparedStatement ps = c.prepareStatement(query);
+//			ps.setInt(1, );
+			){
+		
+		ResultSet rs = ps.executeQuery();
+		
+	while(rs.next()){
+		
+		AuctionItem ai = new AuctionItem();
+		
+		ai.setItemid(rs.getInt("itemid"));
+		ai.setBrand(rs.getString("brand"));
+		ai.setModel(rs.getString("model"));
+		ai.setDescr(rs.getString("descr"));
+		ai.setBuynow(rs.getDouble("buynow"));
+		ai.setStartprice(rs.getDouble("startprice"));
+		ai.setEnddate(rs.getDate("enddate"));
+//		ai.setUserid(rs.getInt("userid"));
+		ai.setActive(rs.getInt("active"));
+		ai.setHighest(rs.getDouble("bid"));
+		items.add(ai);
+		
+//		ai.setImage();
+	}
+		
+	
+	
+	}catch(SQLException e){
+		e.printStackTrace();
+	}
+	
+	
+	
+	return items;
+}
+
+private static Connection getConnection(){
+	
+	try {
+		Class.forName("com.mysql.jdbc.Driver");
+	} catch (ClassNotFoundException e1) {
+		// TODO Auto-generated catch block
+		e1.printStackTrace();
+	} 
+	String connection = "jdbc:mysql://localhost:3306/auctions?zeroDateTimeBehavior=convertToNull";
+	Connection con;
+	try {
+		con = DriverManager.getConnection(connection, "root", "root");
+	 
+		return con;
+	} catch (SQLException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} 
+	
+	return null;
 }
 
 
