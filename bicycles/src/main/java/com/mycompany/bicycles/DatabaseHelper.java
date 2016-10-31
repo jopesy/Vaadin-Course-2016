@@ -5,6 +5,9 @@
  */
 package com.mycompany.bicycles;
 
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -14,6 +17,10 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 import com.mycompany.bicycles.utilities.AuctionItem;
+//Importtaa koko javan sql libraryn
+import com.vaadin.server.StreamResource;
+import com.vaadin.ui.Image;
+
 
 public class DatabaseHelper {
     
@@ -267,22 +274,31 @@ static void getItemInfo(){
     }catch(Exception e){ System.out.println(e);}
 }
 
-    static byte[] getItemPhoto(int photoid) {
-        byte[] photoAsBytes = null;
+    static Image getItemPhoto(int itemid) {
+        Image image=null;
         try{Class.forName("com.mysql.jdbc.Driver");
             Connection con=DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/auctions?zeroDateTimeBehavior=convertToNull", "root", "root");
 
             ResultSet rs=null;
-            PreparedStatement stmt = con.prepareStatement("SELECT * FROM photos WHERE photoid=?");
-            stmt.setInt(1,photoid);
+            PreparedStatement stmt = con.prepareStatement("SELECT * FROM photos WHERE itemid=?");
+            stmt.setInt(1,itemid);
             rs = stmt.executeQuery();
             while(rs.next()){
-                photoAsBytes = rs.getBytes("photo");
+                byte[] photoAsBytes = rs.getBytes("photo");
+                StreamResource.StreamSource streamSource = new StreamResource.StreamSource() {
+                    public InputStream getStream() {
+                        return new ByteArrayInputStream(photoAsBytes);
+                    }
+                };
+                StreamResource resource = new StreamResource(streamSource, "filename");
+                image = new Image("image title", resource);
+
+
             }
             con.close();
         }catch(Exception e){ System.out.println(e);}
-        return photoAsBytes;
+        return image;
     }
 
 //Hakee tietyn käyttäjän kaikki esineet ja niiden kuvat

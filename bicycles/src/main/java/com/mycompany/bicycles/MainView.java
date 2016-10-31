@@ -9,8 +9,11 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.server.WebBrowser;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.*;
+import com.vaadin.data.validator.StringLengthValidator;
+import com.vaadin.data.validator.RegexpValidator;
 
 import java.util.Date;
 
@@ -20,7 +23,7 @@ import java.util.Date;
  * listing all the biddable items
  */
 public class MainView extends CustomComponent implements View{
-    
+
     public static final String NAME = "main";
     private final HorizontalLayout navBarLayout;
     private final Label userLabel;
@@ -29,7 +32,7 @@ public class MainView extends CustomComponent implements View{
     private final Button registerButton;
     private final Button userPageButton;
     private final HorizontalLayout buttonContainer;
-    
+
     private final HorizontalLayout buttonContainer2;
     private final Button openCreationWindow;
     private Window createAuctionWindow;
@@ -42,7 +45,8 @@ public class MainView extends CustomComponent implements View{
     private TextField startingPrice;
     private TextField buyoutPrice;
     private PopupDateField endingDate;
-    
+    private Date currentTime;
+
     public MainView() {
         navBarLayout = new HorizontalLayout();
         navBarLayout.addStyleName("navbar");
@@ -55,11 +59,10 @@ public class MainView extends CustomComponent implements View{
         });
         logoutButton = new Button("Log out");
         logoutButton.addClickListener( click -> {
-            getUI().removeWindow(createAuctionWindow);
             logout();
         });
         logoutButton.setVisible(false);
-        
+
         registerButton = new Button("Register");
         registerButton.addClickListener( click -> {
             getUI().getNavigator().navigateTo(RegisterView.NAME);
@@ -77,38 +80,47 @@ public class MainView extends CustomComponent implements View{
         createAuctionWindow.setContent(auctionContainer);
         createAuctionWindow.center();
         createAuctionWindow.setStyleName("auction-form");
-        
+
         Panel panel = new Panel();
         panel.setSizeUndefined();
         FormLayout content = new FormLayout();
         content.setMargin(true);
         content.setSpacing(true);
-        
+
         panel.setContent(content);
         panel.setStyleName("auction-form-panel");
 
         openCreationWindow = new Button("Create Auction");
         openCreationWindow.addClickListener( h -> {
             getUI().addWindow(createAuctionWindow);
+            navBarLayout.setVisible(false);
         });
         openCreationWindow.setVisible(false);
 
         bikeBrand = new TextField("Brand:");
         bikeBrand.setRequired(true);
+        bikeBrand.addValidator(new StringLengthValidator("Brand length can be 25 characters at most!", 0, 25, true));
 
         bikeModel = new TextField("Model:");
-        bikeModel.setRequired(true);
+        bikeModel.addValidator(new StringLengthValidator("Model length can be 25 characters at most!", 0, 25, true));
 
         bikeDescription = new TextField("Description:");
+        bikeDescription.addValidator(new StringLengthValidator("Description length can be 255 characters at most!", 0, 255, true));
+
         startingPrice = new TextField("Starting price:");
+        startingPrice.addValidator(new RegexpValidator("\\d+", "Starting price must be digits only!"));
         startingPrice.setRequired(true);
 
         buyoutPrice = new TextField("Buyout price:");
+        buyoutPrice.addValidator(new RegexpValidator("\\d+", "Buyout price must be digits only!"));
+
         endingDate = new PopupDateField("Endind date:");
+        currentTime = new Date();
 
         closeButton = new Button("Close");
         closeButton.addClickListener( click -> {
             getUI().removeWindow(createAuctionWindow);
+            navBarLayout.setVisible(true);
         });
 
 
@@ -117,6 +129,7 @@ public class MainView extends CustomComponent implements View{
         createAuction.addClickListener( click -> {
             validateInput();
             getUI().removeWindow(createAuctionWindow);
+            navBarLayout.setVisible(true);
         });
 
         buttonContainer2 = new HorizontalLayout();
@@ -124,6 +137,8 @@ public class MainView extends CustomComponent implements View{
         buttonContainer2.addComponents(createAuction, closeButton);
 
         endingDate.setResolution(Resolution.MINUTE);
+        endingDate.setRangeStart(currentTime);
+        endingDate.setRequired(true);
 
         content.addComponents(bikeBrand, bikeModel, bikeDescription, startingPrice, buyoutPrice, endingDate,  buttonContainer2);
 
@@ -133,8 +148,8 @@ public class MainView extends CustomComponent implements View{
         buttonContainer = new HorizontalLayout();
         buttonContainer.setSpacing(true);
         buttonContainer.addComponents(registerButton, userPageButton,openCreationWindow, loginButton, logoutButton);
-        
-        
+
+
         navBarLayout.addComponents(userLabel, buttonContainer);
         navBarLayout.setMargin(true);
         navBarLayout.setSpacing(true);
@@ -169,17 +184,17 @@ public class MainView extends CustomComponent implements View{
             userLabel.setValue(defaultText);
         }
     }
-    
+
     public void logout() {
         System.out.println("Log out");
         VaadinSession.getCurrent().getSession().setAttribute("username", null);
         userLabel.setValue("Not logged in");
         getUI().getNavigator().navigateTo(MainView.NAME);
-        
+
         new Notification("Logged out!",
-            null,
-            Notification.Type.TRAY_NOTIFICATION, true)
-            .show(Page.getCurrent());
+                null,
+                Notification.Type.TRAY_NOTIFICATION, true)
+                .show(Page.getCurrent());
     }
 
     private void validateInput(){
@@ -187,27 +202,68 @@ public class MainView extends CustomComponent implements View{
         String model = bikeModel.getValue();
         String descr = bikeDescription.getValue();
         int userid = (int) VaadinSession.getCurrent().getSession().getAttribute("userid");
-        int buynow = Integer.parseInt(buyoutPrice.getValue());
-        int startprice = Integer.parseInt(startingPrice.getValue());
+        int buynow;
+        int startprice;
         Date enddate = endingDate.getValue();
-        String edate = toString(enddate);
+        String edate;
 
 
         TextField[] reqFields = {bikeBrand, startingPrice};
         boolean formFilled = true;
 
-        // Check that all the required fields are filled
+
+
         for (TextField field : reqFields) {
             if(field.isEmpty()) {
                 formFilled = false;
                 field.setRequiredError("Please fill out this field");
+                showNotification("Please fill out required fields!", null);
             }
+        }
+
+        if(bikeBrand.isEmpty()){
+            formFilled = false;
+            bikeBrand.setRequiredError("Please enter bike brand");
+        }
+
+
+        if(!startingPrice.isValid()){
+            return;
+        }else{
+            try{
+                startprice = Integer.parseInt(startingPrice.getValue());
+            }catch(NumberFormatException e){
+                showNotification("Oops!", "Starting price must be assigned!");
+                return;
+            }
+        }
+
+        if(!buyoutPrice.isValid()) {
+            showNotification("Oops!", "Only numbers in price!");
+            return;
+        }else{
+            try {
+                buynow = Integer.parseInt(buyoutPrice.getValue());
+            }catch(NumberFormatException e){
+                buynow = 0;
+            }
+        }
+        if(endingDate.isEmpty()){
+            showNotification("Oops!", "Please fill out the date!");
+            return;
+        }else{
+            edate = toString(enddate);
+        }
+        if(enddate.compareTo(currentTime)<1){
+            showNotification("Sorry!", "Date input invalid");
+            return;
         }
         if(!formFilled) {
             showNotification("Oops!", "Please fill out all the required fields!");
             return;
         }else{
             DatabaseHelper.addItem(brand,model,descr,userid,buynow,startprice,edate);
+            showNotification("Auction creation succesful!", null);
         }
     }
 
@@ -222,5 +278,5 @@ public class MainView extends CustomComponent implements View{
     }
 
 
-    
+
 }

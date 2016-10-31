@@ -76,6 +76,7 @@ public class UserView extends CustomComponent implements View {
        
         try {
             pool = new SimpleJDBCConnectionPool("com.mysql.jdbc.Driver", "jdbc:mysql://localhost:3306/auctions?zeroDateTimeBehavior=convertToNull", "root", "root", 2, 5);
+
 //            FreeformQuery query1 = new FreeformQuery(
 //                    "SELECT photoid as Photo, brand as Brand, model as Model, descr as Description, buynow as 'Buy now price', startprice as 'Starting price', enddate as 'End date', MAX(bid) as 'Highest bid' FROM items AS i LEFT JOIN photos AS p ON i.itemid=p.itemid LEFT JOIN bids AS b ON i.itemid=b.itemid WHERE i.userid=" + userid + " GROUP BY i.itemid, p.photoid", pool
 //            );
@@ -86,6 +87,7 @@ public class UserView extends CustomComponent implements View {
 
 //            itemContainer = new SQLContainer(query1);
 //            bidContainer = new SQLContainer(query2);
+
         } catch (Exception e) {
             System.out.println("Table query for user items failed");
             System.out.println(e.getMessage());
@@ -101,7 +103,7 @@ public class UserView extends CustomComponent implements View {
        
 
         /*
-        Kyseinen pätkä koodia korvaa taulun ensimmäisen sarakkeen. Tällä vois ehkä jotenki saada kuvan esille....
+        //Kyseinen pätkä koodia korvaa taulun ensimmäisen sarakkeen. Tällä vois ehkä jotenki saada kuvan esille....
         ownItems.addGeneratedColumn("Photo", new Table.ColumnGenerator() {
             public Object generateCell(Table source, Object itemId, Object columnId) {
                 TextField tf = new TextField();
@@ -114,8 +116,6 @@ public class UserView extends CustomComponent implements View {
         Collection<?> itemIds = ownItems.getItemIds();
         for(Object itemId:itemIds){
             Property p = ownItems.getContainerProperty(itemId, "Photo");
-            System.out.println(p.getValue());
-
             if(p.getValue() != null) {
                 byte[] photoAsBytes = DatabaseHelper.getItemPhoto((int) p.getValue());
                 StreamResource.StreamSource streamSource = new StreamResource.StreamSource() {
@@ -126,11 +126,28 @@ public class UserView extends CustomComponent implements View {
 
                 StreamResource resource = new StreamResource(streamSource, "filename");
                 Image image = new Image("image title", resource);
-
-                p.setValue(image);
+                ownItems.setRowHeaderMode(Table.ROW_HEADER_MODE_ICON_ONLY);
+                ownItems.setItemIcon(itemId, resource);
             }
         }
 
+        Collection<?> itemIds2 = ownBids.getItemIds();
+        for(Object itemId:itemIds2){
+            Property p = ownBids.getContainerProperty(itemId, "Photo");
+            if(p.getValue() != null) {
+                byte[] photoAsBytes = DatabaseHelper.getItemPhoto((int) p.getValue());
+                StreamResource.StreamSource streamSource = new StreamResource.StreamSource() {
+                    public InputStream getStream() {
+                        return new ByteArrayInputStream(photoAsBytes);
+                    }
+                };
+
+                StreamResource resource = new StreamResource(streamSource, "filename");
+                Image image = new Image("image title", resource);
+                ownBids.setRowHeaderMode(Table.ROW_HEADER_MODE_ICON_ONLY);
+                ownBids.setItemIcon(itemId, resource);
+            }
+        }
 
 //        ownItems.setSortEnabled(false);
 //        ownBids.setSortEnabled(false);
