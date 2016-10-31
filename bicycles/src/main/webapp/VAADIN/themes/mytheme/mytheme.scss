@@ -124,5 +124,12 @@
           color: white;
       }
   }
-  
+  .v-table-row, .v-table-cell-wrapper {
+      .v-textfield {
+          width: 120px;
+      }
+  }
+  .v-table-column-selector {
+      display:none !important;
+  }
 }

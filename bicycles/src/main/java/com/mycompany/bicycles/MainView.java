@@ -201,7 +201,7 @@ public class MainView extends CustomComponent implements View{
                 registerButton.setVisible(false);
                 userPageButton.setVisible(true);
                 openCreationWindow.setVisible(true);
-
+                items.setColumnCollapsed("makebid", false);
             }
             else {
                 loginButton.setVisible(true);
@@ -210,6 +210,7 @@ public class MainView extends CustomComponent implements View{
                 userPageButton.setVisible(false);
                 openCreationWindow.setVisible(false);
                 items.setVisible(false);
+                items.setColumnCollapsed("makebid", true);
             }
         }
         else {
@@ -322,6 +323,9 @@ public class MainView extends CustomComponent implements View{
         items.addContainerProperty("end",Date.class,null,"Auction ends:",null,null);
         items.addContainerProperty("makebid", VerticalLayout.class, null,"",null,null);
         
+        items.setColumnCollapsingAllowed(true);
+        items.setColumnCollapsed("makebid", true);
+        
         for(AuctionItem ai : list){
         	if(ai.getActive()==0)continue; 
 	        Object it =  items.addItem();
@@ -353,6 +357,7 @@ public class MainView extends CustomComponent implements View{
 	        bid.addClickListener(e->{
 	        	int a= (int) VaadinSession.getCurrent().getSession().getAttribute("userid");
 	        	DatabaseHelper.addBid(ai.getItemid(),a , (Double.parseDouble(in.getValue())));
+                        showNotification("Success!", "You have placed a new bid");
 	        });
 	        vl.addComponent(bid);
 	        p1.setValue(vl);
