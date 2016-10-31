@@ -116,6 +116,7 @@ public class MainView extends CustomComponent implements View{
         openCreationWindow.addClickListener( h -> {
             getUI().addWindow(createAuctionWindow);
             navBarLayout.setVisible(false);
+            items.setVisible(false);
         });
         openCreationWindow.setVisible(false);
         openCreationWindow.setStyleName("new-auction-window-button");
@@ -153,6 +154,7 @@ public class MainView extends CustomComponent implements View{
         closeButton.addClickListener( click -> {
             getUI().removeWindow(createAuctionWindow);
             navBarLayout.setVisible(true);
+            items.setVisible(true);
         });
 
 
@@ -164,6 +166,7 @@ public class MainView extends CustomComponent implements View{
             if(formValid) {
                 getUI().removeWindow(createAuctionWindow);
                 navBarLayout.setVisible(true);
+                items.setVisible(true);
             }
             else return;
         });
