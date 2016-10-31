@@ -145,4 +145,10 @@
   .v-table-column-selector {
       display:none !important;
   }
+  .my-items-label, .my-bids-label {
+      color: white;
+      font-weight: bold;
+      font-size: 24px;
+      text-shadow: 1px 1px grey;
+  }
 }

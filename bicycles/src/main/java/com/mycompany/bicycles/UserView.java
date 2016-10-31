@@ -25,6 +25,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 
@@ -36,6 +37,8 @@ public class UserView extends CustomComponent implements View {
     private final VerticalLayout Layout;
     private final HorizontalLayout buttonContainer;
     private  final Button backToMainButton;
+    private Label ownItemsLabel;
+    private Label ownBidsLabel;
     private Table ownItems;
     private Table ownBids;
 //    private SQLContainer itemContainer;
@@ -61,6 +64,11 @@ public class UserView extends CustomComponent implements View {
         buttonContainer = new HorizontalLayout();
         buttonContainer.setSpacing(true);
         buttonContainer.addComponent(backToMainButton);
+        
+        ownItemsLabel = new Label("My items:");
+        ownBidsLabel = new Label("My bids:");
+        ownItemsLabel.setStyleName("my-items-label");
+        ownBidsLabel.setStyleName("my-bids-label");
 
         ownItems = new Table();
         ownItems.setSelectable(true);
@@ -156,7 +164,7 @@ public class UserView extends CustomComponent implements View {
         ownBids.setPageLength(0);
 
         Layout = new VerticalLayout();
-        Layout.addComponents(buttonContainer, items, ownBids);
+        Layout.addComponents(buttonContainer, ownItemsLabel, items, ownBidsLabel, ownBids);
         Layout.setComponentAlignment(items, Alignment.TOP_CENTER);
         Layout.setMargin(true);
         Layout.setSpacing(true);
