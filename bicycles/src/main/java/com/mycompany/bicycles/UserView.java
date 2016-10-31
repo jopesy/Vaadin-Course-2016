@@ -40,8 +40,7 @@ public class UserView extends CustomComponent implements View {
 
     private Label ownItemsLabel;
     private Label ownBidsLabel;
-    private Table ownItems;
-    private Table ownBids;
+
 
 //    private SQLContainer itemContainer;
 //    private SQLContainer bidContainer;
@@ -80,85 +79,18 @@ public class UserView extends CustomComponent implements View {
         try {
             pool = new SimpleJDBCConnectionPool("com.mysql.jdbc.Driver", "jdbc:mysql://localhost:3306/auctions?zeroDateTimeBehavior=convertToNull", "root", "root", 2, 5);
 
-//            FreeformQuery query1 = new FreeformQuery(
-//                    "SELECT photoid as Photo, brand as Brand, model as Model, descr as Description, buynow as 'Buy now price', startprice as 'Starting price', enddate as 'End date', MAX(bid) as 'Highest bid' FROM items AS i LEFT JOIN photos AS p ON i.itemid=p.itemid LEFT JOIN bids AS b ON i.itemid=b.itemid WHERE i.userid=" + userid + " GROUP BY i.itemid, p.photoid", pool
-//            );
             addItems(DatabaseHelper.listUsersItems());
             addBids(DatabaseHelper.getUsersBids());
-//            FreeformQuery query2 = new FreeformQuery(
-//                    "SELECT photoid as Photo, brand as Brand, model as Model, descr as Description, buynow as 'Buy now price', startprice as 'Starting price', enddate as 'End date', MAX(bid) as 'My bid' FROM items AS i LEFT JOIN photos AS p ON i.itemid=p.itemid LEFT JOIN bids AS b ON i.itemid=b.itemid WHERE b.userid=" + userid + " GROUP BY i.itemid, p.photoid", pool
-//            );
 
-//            itemContainer = new SQLContainer(query1);
-//            bidContainer = new SQLContainer(query2);
 
         } catch (Exception e) {
          
             e.printStackTrace();
         }
 
-        
-//        ownItems.setContainerDataSource(itemContainer);
-//        ownBids.setContainerDataSource(bidContainer);
-
-        
-       
-
-        /*
-        //Kyseinen pätkä koodia korvaa taulun ensimmäisen sarakkeen. Tällä vois ehkä jotenki saada kuvan esille....
-        ownItems.addGeneratedColumn("Photo", new Table.ColumnGenerator() {
-            public Object generateCell(Table source, Object itemId, Object columnId) {
-                TextField tf = new TextField();
-                return tf;
-            }
-        });
-        */
-/*
-
-        Collection<?> itemIds = ownItems.getItemIds();
-        for(Object itemId:itemIds){
-            Property p = ownItems.getContainerProperty(itemId, "Photo");
-            if(p.getValue() != null) {
-                byte[] photoAsBytes = DatabaseHelper.getItemPhoto((int) p.getValue());
-                StreamResource.StreamSource streamSource = new StreamResource.StreamSource() {
-                    public InputStream getStream() {
-                        return new ByteArrayInputStream(photoAsBytes);
-                    }
-                };
-
-                StreamResource resource = new StreamResource(streamSource, "filename");
-                Image image = new Image("image title", resource);
-                ownItems.setRowHeaderMode(Table.ROW_HEADER_MODE_ICON_ONLY);
-                ownItems.setItemIcon(itemId, resource);
-            }
-        }
-
-        Collection<?> itemIds2 = ownBids.getItemIds();
-        for(Object itemId:itemIds2){
-            Property p = ownBids.getContainerProperty(itemId, "Photo");
-            if(p.getValue() != null) {
-                byte[] photoAsBytes = DatabaseHelper.getItemPhoto((int) p.getValue());
-                StreamResource.StreamSource streamSource = new StreamResource.StreamSource() {
-                    public InputStream getStream() {
-                        return new ByteArrayInputStream(photoAsBytes);
-                    }
-                };
-
-                StreamResource resource = new StreamResource(streamSource, "filename");
-                Image image = new Image("image title", resource);
-                ownBids.setRowHeaderMode(Table.ROW_HEADER_MODE_ICON_ONLY);
-                ownBids.setItemIcon(itemId, resource);
-            }
-        }
-*/
-//        ownItems.setSortEnabled(false);
-//        ownBids.setSortEnabled(false);
-
-//        ownItems.setPageLength(0);
-
         Layout = new VerticalLayout();
 
-        Layout.addComponents(buttonContainer, ownItemsLabel, items, ownBidsLabel, ownBids);
+        Layout.addComponents(buttonContainer, ownItemsLabel, items, ownBidsLabel, bids);
 
         Layout.setComponentAlignment(items, Alignment.TOP_CENTER);
         Layout.setMargin(true);
