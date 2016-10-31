@@ -29,6 +29,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.Table;
@@ -54,12 +55,12 @@ public class MainView extends CustomComponent implements View{
     private final Button userPageButton;
     private final HorizontalLayout buttonContainer;
 
-    private final HorizontalLayout buttonContainer2;
+    private  HorizontalLayout buttonContainer2;
     private final Button openCreationWindow;
     private Window createAuctionWindow;
-    private final VerticalLayout auctionContainer;
-    private final Button closeButton;
-    private final Button createAuction;
+    private  VerticalLayout auctionContainer;
+    private  Button closeButton;
+    private  Button createAuction;
     private TextField bikeBrand;
     private TextField bikeModel;
     private TextField bikeDescription;
@@ -69,6 +70,7 @@ public class MainView extends CustomComponent implements View{
     private Date currentTime;
     private Table items;
     private File uploadedImage;
+    
     public MainView() {
         navBarLayout = new HorizontalLayout();
         navBarLayout.addStyleName("navbar");
@@ -103,7 +105,40 @@ public class MainView extends CustomComponent implements View{
         createAuctionWindow.center();
         createAuctionWindow.setStyleName("auction-form");
 
-        Panel panel = new Panel("New auction");
+
+        openCreationWindow = new Button("+ New Auction");
+        openCreationWindow.addClickListener( h -> {
+            Panel panel = createAuctionPanel();
+            auctionContainer.removeAllComponents();
+            auctionContainer.addComponent(panel);
+            auctionContainer.setComponentAlignment(panel, Alignment.MIDDLE_CENTER);
+            getUI().addWindow(createAuctionWindow);
+            navBarLayout.setVisible(false);
+        });
+        openCreationWindow.setVisible(false);
+        openCreationWindow.setStyleName("new-auction-window-button");
+
+
+        buttonContainer = new HorizontalLayout();
+        buttonContainer.setSpacing(true);
+        buttonContainer.addComponents(registerButton, openCreationWindow, userPageButton, loginButton, logoutButton);
+
+        addItems(DatabaseHelper.listAllItems());
+        navBarLayout.addComponents(userLabel, buttonContainer,items);
+        navBarLayout.setMargin(true);
+        navBarLayout.setSpacing(true);
+        navBarLayout.setComponentAlignment(buttonContainer, Alignment.TOP_RIGHT);
+        navBarLayout.setSizeFull();
+        
+        mainLayout = new VerticalLayout();
+        mainLayout.addComponents(navBarLayout,items);
+//        items.setSizeFull();
+        mainLayout.setComponentAlignment(items, Alignment.TOP_CENTER);
+        setCompositionRoot(mainLayout);
+    }
+
+	private Panel createAuctionPanel() {
+		Panel panel = new Panel("New auction");
         panel.setSizeUndefined();
         FormLayout content = new FormLayout();
         content.setMargin(true);
@@ -112,13 +147,7 @@ public class MainView extends CustomComponent implements View{
         panel.setContent(content);
         panel.setStyleName("auction-form-panel");
         addItems(DatabaseHelper.listAllItems());
-        openCreationWindow = new Button("+ New Auction");
-        openCreationWindow.addClickListener( h -> {
-            getUI().addWindow(createAuctionWindow);
-            navBarLayout.setVisible(false);
-        });
-        openCreationWindow.setVisible(false);
-        openCreationWindow.setStyleName("new-auction-window-button");
+
 
         bikeBrand = new TextField("Brand:");
         bikeBrand.setRequired(true);
@@ -147,6 +176,23 @@ public class MainView extends CustomComponent implements View{
         upload.addSucceededListener(e->{
         	upload.setVisible(false);
         	uploadedImage = receiver.file;
+
+        });
+        upload.addStartedListener(evt->{
+
+    	    String contentType = evt.getMIMEType();
+    	    boolean allowed = false;
+    	    for(int i=0;i<receiver.allowedMimeTypes.size();i++){
+    	        if(contentType.equalsIgnoreCase(receiver.allowedMimeTypes.get(i))){
+    	            allowed = true;
+    	            break;
+    	        }
+    	    }
+    	    if(!allowed){
+
+    	        Notification.show("Error", "\nAllowed image types: "+receiver.allowedMimeTypes, Type.ERROR_MESSAGE);
+    	        upload.interruptUpload();
+    	    }
         });
         
         closeButton = new Button("Close");
@@ -164,6 +210,7 @@ public class MainView extends CustomComponent implements View{
             if(formValid) {
                 getUI().removeWindow(createAuctionWindow);
                 navBarLayout.setVisible(true);
+                upload.setVisible(true);
             }
             else return;
         });
@@ -178,27 +225,8 @@ public class MainView extends CustomComponent implements View{
         endingDate.setRequired(true);
 
         content.addComponents(bikeBrand, bikeModel, bikeDescription, startingPrice, buyoutPrice, endingDate, upload, buttonContainer2);
-
-        auctionContainer.addComponent(panel);
-        auctionContainer.setComponentAlignment(panel, Alignment.MIDDLE_CENTER);
-
-        buttonContainer = new HorizontalLayout();
-        buttonContainer.setSpacing(true);
-        buttonContainer.addComponents(registerButton, openCreationWindow, userPageButton, loginButton, logoutButton);
-
-        addItems(DatabaseHelper.listAllItems());
-        navBarLayout.addComponents(userLabel, buttonContainer,items);
-        navBarLayout.setMargin(true);
-        navBarLayout.setSpacing(true);
-        navBarLayout.setComponentAlignment(buttonContainer, Alignment.TOP_RIGHT);
-        navBarLayout.setSizeFull();
-        
-        mainLayout = new VerticalLayout();
-        mainLayout.addComponents(navBarLayout,items);
-//        items.setSizeFull();
-        mainLayout.setComponentAlignment(items, Alignment.TOP_CENTER);
-        setCompositionRoot(mainLayout);
-    }
+		return panel;
+	}
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
@@ -330,7 +358,7 @@ public class MainView extends CustomComponent implements View{
     	items.addContainerProperty("image", Image.class, null,"Photo",null,null);
     	items.addContainerProperty("brand", String.class, "BRAND","Brand",null,null);
         items.addContainerProperty("model", String.class, "MODEL","Model",null,null);
-        items.addContainerProperty("desc", VerticalLayout.class, null,"Description",null,null);
+        items.addContainerProperty("desc", String.class, null,"Description",null,null);
         items.addContainerProperty("buynow",Double.class, 0.0,"Buy now price:",null,null);
         items.addContainerProperty("current", Double.class, 0.0,"Highest bid:",null,null);
         items.addContainerProperty("starting", Double.class, 0.0,"Starting price:", null,null);
@@ -352,7 +380,7 @@ public class MainView extends CustomComponent implements View{
 	        p1 = (Property)item.getItemProperty("model");
 	        p1.setValue(ai.getModel());
 	        p1 = (Property)item.getItemProperty("desc");
-//	        p1.setValue(ai.getDescr());
+	        p1.setValue(ai.getDescr());
 	        p1 = (Property)item.getItemProperty("buynow");
 	        p1.setValue(ai.getBuynow());
 	        p1 =(Property) item.getItemProperty("current");

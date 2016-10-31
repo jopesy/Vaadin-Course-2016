@@ -3,6 +3,7 @@ package com.mycompany.bicycles.utilities;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 
 import com.vaadin.server.Page;
 import com.vaadin.ui.Notification;
@@ -11,7 +12,14 @@ import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Upload.SucceededListener;
 
 public class ImageUploader implements Receiver, SucceededListener {
-    public File file;
+	public ArrayList<String> allowedMimeTypes;
+	
+	public ImageUploader(){
+		allowedMimeTypes= new ArrayList<String>();
+		allowedMimeTypes.add("image/jpeg");
+		allowedMimeTypes.add("image/png");
+	}
+	public File file;
 
     @Override
     public OutputStream receiveUpload(String filename,
@@ -36,9 +44,13 @@ public class ImageUploader implements Receiver, SucceededListener {
         return fos; // Return the output stream to write to
     }
 
+
+    
     @Override
     public void uploadSucceeded(SucceededEvent event) {
         // Show the uploaded file in the image viewer
       
     }
+
+
 }
