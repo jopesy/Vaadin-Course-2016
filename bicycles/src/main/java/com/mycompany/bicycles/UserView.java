@@ -73,7 +73,6 @@ public class UserView extends CustomComponent implements View {
             FreeformQuery query2 = new FreeformQuery(
                     "SELECT photoid as Photo, brand as Brand, model as Model, descr as Description, buynow as 'Buy now price', startprice as 'Starting price', enddate as 'End date', MAX(bid) as 'My bid' FROM items AS i LEFT JOIN photos AS p ON i.itemid=p.itemid LEFT JOIN bids AS b ON i.itemid=b.itemid WHERE b.userid=" + userid + " GROUP BY i.itemid, p.photoid", pool
             );
-
             itemContainer = new SQLContainer(query1);
             bidContainer = new SQLContainer(query2);
         } catch (Exception e) {
@@ -114,14 +113,13 @@ public class UserView extends CustomComponent implements View {
 
                 StreamResource resource = new StreamResource(streamSource, "filename");
                 Image image = new Image("image title", resource);
+                ownItems.setRowHeaderMode(Table.ROW_HEADER_MODE_ICON_ONLY);
+                ownItems.setItemIcon(itemId, resource);
 
-                p.setValue(image);
             }
         }
-
-
-        ownItems.setSortEnabled(false);
-        ownBids.setSortEnabled(false);
+        //ownItems.setSortEnabled(false);
+        //ownBids.setSortEnabled(false);
 
         ownItems.setPageLength(0);
         ownBids.setPageLength(0);
