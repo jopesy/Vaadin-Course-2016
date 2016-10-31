@@ -365,15 +365,14 @@ public class MainView extends CustomComponent implements View{
     	items.addContainerProperty("brand", String.class, "BRAND","Brand",null,null);
         items.addContainerProperty("model", String.class, "MODEL","Model",null,null);
         items.addContainerProperty("desc", VerticalLayout.class, null,"Description",null,null);
-        items.addContainerProperty("buynow",Double.class, 0.0,"Buy now price:",null,null);
-        items.addContainerProperty("current", Double.class, 0.0,"Highest bid:",null,null);
-        items.addContainerProperty("starting", Double.class, 0.0,"Starting price:", null,null);
+        items.addContainerProperty("buynow",Double.class, 0.0,"Buy now (€):",null,null);
+        items.addContainerProperty("current", Double.class, 0.0,"Highest bid (€):",null,null);
+        items.addContainerProperty("starting", Double.class, 0.0,"Starting (€):", null,null);
         items.addContainerProperty("end",Date.class,null,"Auction ends:",null,null);
         items.addContainerProperty("makebid", VerticalLayout.class, null,"",null,null);
         
         items.setColumnCollapsingAllowed(true);
         items.setColumnCollapsed("makebid", true);
-        //items.setColumnCollapsed("desc", true);
         
         items.setPageLength(0);
         items.setSizeFull();
