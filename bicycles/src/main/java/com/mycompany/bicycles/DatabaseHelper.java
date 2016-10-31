@@ -387,10 +387,55 @@ static ArrayList<AuctionItem> listAllItems(){
 		ai.setEnddate(rs.getDate("enddate"));
 //		ai.setUserid(rs.getInt("userid"));
 		ai.setActive(rs.getInt("active"));
+		ai.setImage(getItemPhoto(rs.getInt("itemid")));
 		ai.setHighest(rs.getDouble("bid"));
 		items.add(ai);
 		
 //		ai.setImage();
+	}
+		
+	
+	
+	}catch(SQLException e){
+		e.printStackTrace();
+	}
+	
+	
+	
+	return items;
+}
+
+
+static ArrayList<AuctionItem> listUsersItems(){
+	ArrayList<AuctionItem> items = new ArrayList<AuctionItem>();
+	
+	String query = "SELECT i.itemid,brand , model, descr , buynow, startprice, enddate,active, MAX(bid) as bid FROM items AS i LEFT JOIN photos AS p ON i.itemid=p.itemid LEFT JOIN bids AS b ON i.itemid=b.itemid GROUP BY i.itemid, p.photoid";
+	
+	try(Connection c = getConnection();
+		PreparedStatement ps = c.prepareStatement(query);
+//			ps.setInt(1, );
+			){
+		
+		ResultSet rs = ps.executeQuery();
+		
+	while(rs.next()){
+		
+		AuctionItem ai = new AuctionItem();
+		
+		ai.setItemid(rs.getInt("itemid"));
+		ai.setBrand(rs.getString("brand"));
+		ai.setModel(rs.getString("model"));
+		ai.setDescr(rs.getString("descr"));
+		ai.setBuynow(rs.getDouble("buynow"));
+		ai.setStartprice(rs.getDouble("startprice"));
+		ai.setEnddate(rs.getDate("enddate"));
+		ai.setUserid(rs.getInt("userid"));
+		ai.setActive(rs.getInt("active"));
+		ai.setHighest(rs.getDouble("bid"));
+		ai.setImage(getItemPhoto(rs.getInt("itemid")));
+		items.add(ai);
+		
+
 	}
 		
 	

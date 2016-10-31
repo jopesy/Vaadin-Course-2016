@@ -2,6 +2,8 @@ package com.mycompany.bicycles.utilities;
 
 import java.util.Date;
 
+import com.vaadin.ui.Image;
+
 public class AuctionItem {
 
 	int itemid;
@@ -12,7 +14,7 @@ public class AuctionItem {
 	double startprice;
 	Date enddate;
 	double high;
-
+	Image img;
 	int userid;
 	int active;
 	public int getItemid() {
@@ -75,6 +77,14 @@ public class AuctionItem {
 	}	
 	public double getHighest(){
 		return high;
+	}
+	public void setImage(Image itemPhoto) {
+		this.img=itemPhoto;
+		
+	}
+	public Image getImage(){
+		if(img==null)return new Image();
+		return img;
 	}
 	
 	

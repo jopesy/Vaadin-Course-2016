@@ -13,8 +13,12 @@ import com.vaadin.server.WebBrowser;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.*;
 import com.vaadin.data.validator.StringLengthValidator;
+import com.mycompany.bicycles.utilities.AuctionItem;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.data.validator.RegexpValidator;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -26,6 +30,7 @@ public class MainView extends CustomComponent implements View{
 
     public static final String NAME = "main";
     private final HorizontalLayout navBarLayout;
+    private final VerticalLayout mainLayout;
     private final Label userLabel;
     private final Button loginButton;
     private final Button logoutButton;
@@ -46,7 +51,8 @@ public class MainView extends CustomComponent implements View{
     private TextField buyoutPrice;
     private PopupDateField endingDate;
     private Date currentTime;
-
+    private Table items;
+    
     public MainView() {
         navBarLayout = new HorizontalLayout();
         navBarLayout.addStyleName("navbar");
@@ -89,7 +95,7 @@ public class MainView extends CustomComponent implements View{
 
         panel.setContent(content);
         panel.setStyleName("auction-form-panel");
-
+        addItems(DatabaseHelper.listAllItems());
         openCreationWindow = new Button("Create Auction");
         openCreationWindow.addClickListener( h -> {
             getUI().addWindow(createAuctionWindow);
@@ -150,12 +156,17 @@ public class MainView extends CustomComponent implements View{
         buttonContainer.addComponents(registerButton, userPageButton,openCreationWindow, loginButton, logoutButton);
 
 
-        navBarLayout.addComponents(userLabel, buttonContainer);
+        navBarLayout.addComponents(userLabel, buttonContainer,items);
         navBarLayout.setMargin(true);
         navBarLayout.setSpacing(true);
         navBarLayout.setComponentAlignment(buttonContainer, Alignment.TOP_RIGHT);
         navBarLayout.setSizeFull();
-        setCompositionRoot(navBarLayout);
+        
+        mainLayout = new VerticalLayout();
+        mainLayout.addComponents(navBarLayout,items);
+//        items.setSizeFull();
+        mainLayout.setComponentAlignment(items, Alignment.TOP_CENTER);
+        setCompositionRoot(mainLayout);
     }
 
     @Override
@@ -171,6 +182,7 @@ public class MainView extends CustomComponent implements View{
                 registerButton.setVisible(false);
                 userPageButton.setVisible(true);
                 openCreationWindow.setVisible(true);
+
             }
             else {
                 loginButton.setVisible(true);
@@ -178,6 +190,7 @@ public class MainView extends CustomComponent implements View{
                 registerButton.setVisible(true);
                 userPageButton.setVisible(false);
                 openCreationWindow.setVisible(false);
+                items.setVisible(false);
             }
         }
         else {
@@ -277,6 +290,45 @@ public class MainView extends CustomComponent implements View{
         return date.getYear()+1900 + "-" + (date.getMonth()+1) + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":" + "00";
     }
 
+    public void addItems(ArrayList<AuctionItem> list){
+    	items = new Table();
+    	items.addContainerProperty("image", Image.class, null,"Photo",null,null);
+    	items.addContainerProperty("brand", String.class, "BRAND","Brand",null,null);
+        items.addContainerProperty("model", String.class, "MODEL","Model",null,null);
+        items.addContainerProperty("desc", VerticalLayout.class, null,"Description",null,null);
+        items.addContainerProperty("buynow",Double.class, 0.0,"Buy now price:",null,null);
+        items.addContainerProperty("current", Double.class, 0.0,"Highest bid:",null,null);
+        items.addContainerProperty("starting", Double.class, 0.0,"Starting price:", null,null);
+        items.addContainerProperty("end",Date.class,null,"Auction ends:",null,null);
+        items.addContainerProperty("makebid", Button.class, null,"",null,null);
+
+        for(AuctionItem ai : list){
+        	if(ai.getActive()==0)continue; 
+	        Object it =  items.addItem();
+	        Item item = items.getItem(it);
+	        
+	        Property p1 = item.getItemProperty("image");
+	        p1.setValue(ai.getImage());
+	        p1 = (Property)item.getItemProperty("brand");
+	        p1.setValue(ai.getBrand());
+	        p1 = (Property)item.getItemProperty("model");
+	        p1.setValue(ai.getModel());
+	        p1 = (Property)item.getItemProperty("desc");
+//	        p1.setValue(ai.getDescr());
+	        p1 = (Property)item.getItemProperty("buynow");
+	        p1.setValue(ai.getBuynow());
+	        p1 =(Property) item.getItemProperty("current");
+	        p1.setValue(ai.getHighest());
+	        p1 =(Property) item.getItemProperty("starting");
+	        p1.setValue(ai.getStartprice());
+	        p1 =(Property) item.getItemProperty("end");
+	        p1.setValue(ai.getEnddate());
+	        p1=(Property)item.getItemProperty("makebid");
+	        p1.setValue(new Button("Place bid"));
+	
+        }
+       }
+    
 
 
 }

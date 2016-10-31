@@ -111,7 +111,7 @@ public class UserView extends CustomComponent implements View {
             }
         });
         */
-
+/*
 
         Collection<?> itemIds = ownItems.getItemIds();
         for(Object itemId:itemIds){
@@ -148,7 +148,7 @@ public class UserView extends CustomComponent implements View {
                 ownBids.setItemIcon(itemId, resource);
             }
         }
-
+*/
 //        ownItems.setSortEnabled(false);
 //        ownBids.setSortEnabled(false);
 
@@ -157,6 +157,7 @@ public class UserView extends CustomComponent implements View {
 
         Layout = new VerticalLayout();
         Layout.addComponents(buttonContainer, items, ownBids);
+        Layout.setComponentAlignment(items, Alignment.TOP_CENTER);
         Layout.setMargin(true);
         Layout.setSpacing(true);
         Layout.setComponentAlignment(buttonContainer, Alignment.TOP_RIGHT);
@@ -184,7 +185,7 @@ public class UserView extends CustomComponent implements View {
 	        Item item = items.getItem(it);
 	        
 	        Property p1 = item.getItemProperty("image");
-	        p1.setValue(null);
+	        p1.setValue(ai.getImage());
 	        p1 = (Property)item.getItemProperty("brand");
 	        p1.setValue(ai.getBrand());
 	        p1 = (Property)item.getItemProperty("model");
