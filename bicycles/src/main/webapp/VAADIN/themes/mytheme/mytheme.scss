@@ -112,12 +112,12 @@
   .new-auction-window-button {
       background: rgba(153, 214, 255, 0.6);
   }
-  img.v-icon {
+  img.v-image {
       width: 200px !important;
   }
   .v-table, .v-table-header-wrap {
       background: rgba(0,0,0,0.8);
-      td {
+      .cell-wrapper {
           color: black;
       }
       .v-table-header-cell {

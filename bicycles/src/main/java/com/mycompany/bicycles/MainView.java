@@ -162,7 +162,7 @@ public class MainView extends CustomComponent implements View{
         buttonContainer.setSpacing(true);
         buttonContainer.addComponents(registerButton, openCreationWindow, userPageButton, loginButton, logoutButton);
 
-
+        addItems(DatabaseHelper.listAllItems());
         navBarLayout.addComponents(userLabel, buttonContainer,items);
         navBarLayout.setMargin(true);
         navBarLayout.setSpacing(true);
