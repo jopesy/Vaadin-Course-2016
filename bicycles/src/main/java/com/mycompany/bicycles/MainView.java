@@ -378,6 +378,7 @@ public class MainView extends CustomComponent implements View{
                         showNotification("Success!", "You have placed a new bid");
 	        });
 	        vl.addComponent(bid);
+                vl.setSpacing(true);
 	        p1.setValue(vl);
 	//test
         }
