@@ -46,7 +46,7 @@
       height: 100px;
       color: white;
   }
-  .login-panel, .register-panel {
+  .login-panel, .register-panel, .auction-form-panel {
       background: rgba(0,0,0, 0.6);
       color: white;
       margin-top: 80px;
@@ -95,13 +95,29 @@
       }
   }
   .auction-form {
-      .auction-form-panel, .v-window-header, .v-window-maximizebox, .v-window-closebox, .v-window-restorebox {
+      .auction-form-panel {
+          margin-top: 0;
           background: none;
           color: white;
           border: none;
       }
-      .v-window-header {
-          color: #99d6ff;
+      .v-window-header, .v-window-maximizebox, .v-window-closebox, .v-window-restorebox {
+          //color: #99d6ff;
+          display: none
+      }
+      .v-datefield {
+          width: 185px;
       }
   }
+  .new-auction-window-button {
+      background: rgba(153, 214, 255, 0.6);
+  }
+  img.v-icon {
+      width: 200px !important;
+  }
+  .v-table, .v-table-header-wrap {
+      background: rgba(0,0,0,0.8);
+      color: white;
+  }
+  
 }
