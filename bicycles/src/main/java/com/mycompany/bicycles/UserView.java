@@ -36,11 +36,11 @@ public class UserView extends CustomComponent implements View {
     private final VerticalLayout Layout;
     private final HorizontalLayout buttonContainer;
     private  final Button backToMainButton;
-    private Table ownItems;
-    private Table ownBids;
+
 //    private SQLContainer itemContainer;
 //    private SQLContainer bidContainer;
     private Table items;
+    private Table bids;
     private JDBCConnectionPool pool;
     private int userid;
 
@@ -62,14 +62,6 @@ public class UserView extends CustomComponent implements View {
         buttonContainer.setSpacing(true);
         buttonContainer.addComponent(backToMainButton);
 
-        ownItems = new Table();
-        ownItems.setSelectable(true);
-        ownItems.setSizeFull();
-
-        ownBids = new Table();
-        ownBids.setSelectable(true);
-        ownBids.setSizeFull();
-
         
       
        
@@ -81,6 +73,7 @@ public class UserView extends CustomComponent implements View {
 //                    "SELECT photoid as Photo, brand as Brand, model as Model, descr as Description, buynow as 'Buy now price', startprice as 'Starting price', enddate as 'End date', MAX(bid) as 'Highest bid' FROM items AS i LEFT JOIN photos AS p ON i.itemid=p.itemid LEFT JOIN bids AS b ON i.itemid=b.itemid WHERE i.userid=" + userid + " GROUP BY i.itemid, p.photoid", pool
 //            );
             addItems(DatabaseHelper.listUsersItems());
+            addBids(DatabaseHelper.getUsersBids());
 //            FreeformQuery query2 = new FreeformQuery(
 //                    "SELECT photoid as Photo, brand as Brand, model as Model, descr as Description, buynow as 'Buy now price', startprice as 'Starting price', enddate as 'End date', MAX(bid) as 'My bid' FROM items AS i LEFT JOIN photos AS p ON i.itemid=p.itemid LEFT JOIN bids AS b ON i.itemid=b.itemid WHERE b.userid=" + userid + " GROUP BY i.itemid, p.photoid", pool
 //            );
@@ -89,16 +82,14 @@ public class UserView extends CustomComponent implements View {
 //            bidContainer = new SQLContainer(query2);
 
         } catch (Exception e) {
-            System.out.println("Table query for user items failed");
-            System.out.println(e.getMessage());
+         
+            e.printStackTrace();
         }
 
         
 //        ownItems.setContainerDataSource(itemContainer);
 //        ownBids.setContainerDataSource(bidContainer);
 
-        ownItems.setSelectable(false);
-        ownBids.setSelectable(false);
         
        
 
@@ -153,30 +144,29 @@ public class UserView extends CustomComponent implements View {
 //        ownBids.setSortEnabled(false);
 
 //        ownItems.setPageLength(0);
-        ownBids.setPageLength(0);
 
         Layout = new VerticalLayout();
-        Layout.addComponents(buttonContainer, items, ownBids);
+        Layout.addComponents(buttonContainer, items, bids);
         Layout.setComponentAlignment(items, Alignment.TOP_CENTER);
         Layout.setMargin(true);
         Layout.setSpacing(true);
         Layout.setComponentAlignment(buttonContainer, Alignment.TOP_RIGHT);
 //        Layout.setComponentAlignment(ownItems, Alignment.MIDDLE_CENTER);
-        Layout.setComponentAlignment(ownBids, Alignment.MIDDLE_CENTER);
+        Layout.setComponentAlignment(bids, Alignment.MIDDLE_CENTER);
         setCompositionRoot(Layout);
     }
 
 
     public void addItems(ArrayList<AuctionItem> list){
     	items = new Table();
-    	items.addContainerProperty("image", Image.class, null);
-    	items.addContainerProperty("brand", String.class, "BRAND");
-        items.addContainerProperty("model", String.class, "MODEL");
-        items.addContainerProperty("desc", VerticalLayout.class, null);
-        items.addContainerProperty("buynow",Double.class, 0.0);
-        items.addContainerProperty("current", Double.class, 0.0);
-        items.addContainerProperty("starting", Double.class, 0.0);
-        items.addContainerProperty("end",Date.class,null);
+    	items.addContainerProperty("image", Image.class, null,"Photo",null,null);
+    	items.addContainerProperty("brand", String.class, "BRAND","Brand",null,null);
+        items.addContainerProperty("model", String.class, "MODEL","Model",null,null);
+        items.addContainerProperty("desc", VerticalLayout.class, null,"Description",null,null);
+        items.addContainerProperty("buynow",Double.class, 0.0,"Buy now price:",null,null);
+        items.addContainerProperty("current", Double.class, 0.0,"Current price",null,null);
+        items.addContainerProperty("starting", Double.class, 0.0,"Staring price",null,null);
+        items.addContainerProperty("end",Date.class,null,"Ends:",null,null);
         items.addContainerProperty("delete", Button.class, null);
         
         items.setPageLength(0);
@@ -210,6 +200,49 @@ public class UserView extends CustomComponent implements View {
         }
        }
     
+    
+    private void addBids(ArrayList<Bid> bidlist){
+    	System.out.println("adding:" + bidlist.size() + " bids");
+    	bids = new Table();
+    	bids.addContainerProperty("image", Image.class, null);
+    	bids.addContainerProperty("brand", String.class, "BRAND");
+    	bids.addContainerProperty("model", String.class, "MODEL");
+    	bids.addContainerProperty("desc", VerticalLayout.class, null);
+    	bids.addContainerProperty("buynow",Double.class, 0.0);
+//    	bids.addContainerProperty("current", Double.class, 0.0);
+    	bids.addContainerProperty("starting", Double.class, 0.0);
+    	bids.addContainerProperty("end",Date.class,null);
+    	bids.addContainerProperty("yourbid",Double.class, 0.0);
+        
+        
+
+        for(Bid ai : bidlist){
+        	
+	        Object it =  bids.addItem();
+	        Item item = bids.getItem(it);
+	        
+	        Property p1 = item.getItemProperty("image");
+	        p1.setValue(ai.getImage());
+	        p1 = (Property)item.getItemProperty("brand");
+	        p1.setValue(ai.getBrand());
+	        p1 = (Property)item.getItemProperty("model");
+	        p1.setValue(ai.getModel());
+	        p1 = (Property)item.getItemProperty("desc");
+//	        p1.setValue(ai.getDescr());
+	        p1 = (Property)item.getItemProperty("buynow");
+	        p1.setValue(ai.getBuynow());
+	        p1 =(Property) item.getItemProperty("yourbid");
+	        p1.setValue(ai.getBid());
+//	        p1=(Property)item.getItemProperty("current");
+//	        p1.setValue(ai.get);
+	        p1 =(Property) item.getItemProperty("starting");
+	        p1.setValue(ai.getStartprice());
+	        p1 =(Property) item.getItemProperty("end");
+	        p1.setValue(ai.getEnddate());
+        
+        }
+        
+    }
     
     
     @Override

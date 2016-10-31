@@ -337,29 +337,35 @@ static void getUsersItems(){
 }
 
 //Tietyn käyttäjän tekemät tarjoukset
-static void getUsersBids(){
+static ArrayList<Bid> getUsersBids(){
+	ArrayList<Bid> bids = new ArrayList<Bid>();
+   String query= "SELECT i.itemid,brand, model, descr, buynow , startprice, enddate, MAX(bid) bid FROM items AS i LEFT JOIN photos AS p ON i.itemid=p.itemid LEFT JOIN bids AS b ON i.itemid=b.itemid WHERE b.userid=? GROUP BY i.itemid, p.photoid"; 
     try{Class.forName("com.mysql.jdbc.Driver");  
         Connection con=DriverManager.getConnection(  
         "jdbc:mysql://localhost:3306/auctions?zeroDateTimeBehavior=convertToNull", "root", "root");
         
         ResultSet rs=null;
-        int userid = 3; //Käyttäjän määrittely
-        PreparedStatement stmt = con.prepareStatement("SELECT * FROM bids WHERE userid=?");
+        int userid =(int) VaadinSession.getCurrent().getSession().getAttribute("userid");
+        PreparedStatement stmt = con.prepareStatement(query);
         stmt.setInt(1,userid);
         rs = stmt.executeQuery();
         while(rs.next()){
-            userid = rs.getInt("userid");
-            int bidid = rs.getInt("bidid");
-            int itemid = rs.getInt("itemid");
-            String bid = rs.getString("bid");
-            
-            rs.getMetaData();
-            //Testi tulostus
-            System.out.println(itemid + "\t" + bidid +
-                               "\t" + bid + "\t" + userid);
+        	
+        	Bid b = new Bid();
+        	b.setImage(getItemPhoto(rs.getInt("itemid")));
+        	b.setBrand(rs.getString("brand"));
+        	b.setModel(rs.getString("model"));
+        	b.setDescr(rs.getString("descr"));
+        	b.setBuynow(rs.getDouble("buynow"));
+        	b.setStartprice(rs.getDouble("startprice"));
+        	b.setEnddate(rs.getDate("enddate"));
+        	b.setBid(rs.getDouble("bid"));
+//            b.setItemid(rs.getInt("itemid"));
+        	bids.add(b);
         }
         con.close();
     }catch(Exception e){ System.out.println(e);}
+    return bids;
 }
 
 static ArrayList<AuctionItem> listAllItems(){
@@ -405,11 +411,6 @@ static ArrayList<AuctionItem> listAllItems(){
 	return items;
 }
 
-static ArrayList<Bid> listUsersBids(){
-//   String query = "SELECT photoid as Photo, brand as Brand, model as Model, descr as Description, buynow as 'Buy now price', startprice as 'Starting price', enddate as 'End date', MAX(bid) as 'My bid' FROM items AS i LEFT JOIN photos AS p ON i.itemid=p.itemid LEFT JOIN bids AS b ON i.itemid=b.itemid WHERE b.userid=? GROUP BY i.itemid, p.photoid;"
-//  
-		return null;   
-}
 
 
 static ArrayList<AuctionItem> listUsersItems(){
