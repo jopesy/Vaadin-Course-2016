@@ -7,6 +7,8 @@ package com.mycompany.bicycles;
 
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -20,7 +22,6 @@ import com.mycompany.bicycles.utilities.AuctionItem;
 //Importtaa koko javan sql libraryn
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.VaadinSession;
-import com.vaadin.server.VaadinPortlet.VaadinGateInRequest;
 import com.vaadin.ui.Image;
 
 
@@ -106,7 +107,7 @@ static int getUserId(String username, String password) {
 }
 
 //Lisää esine ja sen kuva
-static void addItem(String brand, String model, String descr, int userid, int buynow, int startprice, String enddate){
+static synchronized void addItem(String brand, String model, String descr, int userid, int buynow, int startprice, String enddate, File uploadedImage){
     try{
         Class.forName("com.mysql.jdbc.Driver");  
         Connection con=DriverManager.getConnection(  
@@ -123,23 +124,19 @@ static void addItem(String brand, String model, String descr, int userid, int bu
         stmt.setString(7, enddate);
         // stmt.setString(8, photoid);
         stmt.executeUpdate();
-        
-        String phototype = ".jpg";
-        //*Blob photo = ; /!!Kuva on kannassa Blob muodossa, ilmeisesti näin sen pitää olla? Tähän on määriteltävä Blob arvo!!
-        String photosize = "100x100";
-        String photoname = "hienojopo";
-        
-        
+       
+               
         //Lisää kuvan viimeksi lisätyn itemidn perusteella
-        PreparedStatement stmt2 = con.prepareStatement("INSERT INTO photos(itemid, phototype, photosize, photoname) VALUES (LAST_INSERT_ID(),?,?,?)");
-        stmt2.setString(1, phototype);
+        PreparedStatement stmt2 = con.prepareStatement("INSERT INTO photos(itemid,phototype,photo) VALUES (LAST_INSERT_ID(),?,?)");
         //*stmt2.setBlob(2, ); //!!BLOB ARVO MÄÄRITELTÄVÄ JA LISÄTTÄVÄ, MYÖS QUERYYN YKSI ? MERKKI LISÄÄ!!
-        stmt2.setString(2, photosize);
-        stmt2.setString(3, photoname);
+        stmt2.setString(1,uploadedImage.getName().substring(uploadedImage.getName().lastIndexOf('.')));
+        stmt2.setBinaryStream(2,new FileInputStream(uploadedImage));
         stmt2.executeUpdate();
 
         con.close();
-    }catch(Exception e){ System.out.println(e);}
+    }catch(Exception e){ 
+    	e.printStackTrace();
+    }
 }
 
 //Poista esine
@@ -288,7 +285,10 @@ static void getItemInfo(){
                 byte[] photoAsBytes = rs.getBytes("photo");
                 StreamResource.StreamSource streamSource = new StreamResource.StreamSource() {
                     public InputStream getStream() {
-                        return new ByteArrayInputStream(photoAsBytes);
+                    	if(photoAsBytes!=null){
+                    		return new ByteArrayInputStream(photoAsBytes);
+                    	}
+                    	return new ByteArrayInputStream(new byte[0]);
                     }
                 };
                 StreamResource resource = new StreamResource(streamSource, "filename");

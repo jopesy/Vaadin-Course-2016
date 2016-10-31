@@ -5,10 +5,12 @@
  */
 package com.mycompany.bicycles;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 
 import com.mycompany.bicycles.utilities.AuctionItem;
+import com.mycompany.bicycles.utilities.ImageUploader;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.validator.RegexpValidator;
@@ -31,6 +33,7 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.Upload;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
@@ -65,7 +68,7 @@ public class MainView extends CustomComponent implements View{
     private PopupDateField endingDate;
     private Date currentTime;
     private Table items;
-    
+    private File uploadedImage;
     public MainView() {
         navBarLayout = new HorizontalLayout();
         navBarLayout.addStyleName("navbar");
@@ -137,6 +140,15 @@ public class MainView extends CustomComponent implements View{
         endingDate = new PopupDateField("Endind date:");
         currentTime = new Date();
 
+  
+        ImageUploader receiver = new ImageUploader();
+        Upload upload = new Upload("Upload Image Here", receiver);
+        upload.setVisible(true);
+        upload.addSucceededListener(e->{
+        	upload.setVisible(false);
+        	uploadedImage = receiver.file;
+        });
+        
         closeButton = new Button("Close");
         closeButton.addClickListener( click -> {
             getUI().removeWindow(createAuctionWindow);
@@ -165,7 +177,7 @@ public class MainView extends CustomComponent implements View{
         endingDate.setRangeStart(currentTime);
         endingDate.setRequired(true);
 
-        content.addComponents(bikeBrand, bikeModel, bikeDescription, startingPrice, buyoutPrice, endingDate,  buttonContainer2);
+        content.addComponents(bikeBrand, bikeModel, bikeDescription, startingPrice, buyoutPrice, endingDate, upload, buttonContainer2);
 
         auctionContainer.addComponent(panel);
         auctionContainer.setComponentAlignment(panel, Alignment.MIDDLE_CENTER);
@@ -295,7 +307,9 @@ public class MainView extends CustomComponent implements View{
             showNotification("Oops!", "Please fill out all the required fields!");
             return false;
         }else{
-            DatabaseHelper.addItem(brand,model,descr,userid,buynow,startprice,edate);
+        	
+            DatabaseHelper.addItem(brand,model,descr,userid,buynow,startprice,edate,uploadedImage);
+            uploadedImage=null;
             showNotification("Success!", "New auction created!");
             return true;
         }
