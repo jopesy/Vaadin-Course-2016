@@ -126,6 +126,7 @@
   .table-items {
       margin-top: 30px;
       margin-bottom: 50px;
+      max-width:95%;
   }
   
   .v-table, .v-table-header-wrap {
@@ -144,5 +145,14 @@
   }
   .v-table-column-selector {
       display:none !important;
+  }
+  .my-items-label, .my-bids-label {
+      color: white;
+      font-weight: bold;
+      font-size: 24px;
+      text-shadow: 1px 1px grey;
+  }
+  .item-desc-container {
+      max-width: 100px;
   }
 }

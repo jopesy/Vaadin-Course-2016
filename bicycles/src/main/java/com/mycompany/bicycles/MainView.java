@@ -364,7 +364,7 @@ public class MainView extends CustomComponent implements View{
     	items.addContainerProperty("image", Image.class, null,"Photo",null,null);
     	items.addContainerProperty("brand", String.class, "BRAND","Brand",null,null);
         items.addContainerProperty("model", String.class, "MODEL","Model",null,null);
-        items.addContainerProperty("desc", String.class, null,"Description",null,null);
+        items.addContainerProperty("desc", VerticalLayout.class, null,"Description",null,null);
         items.addContainerProperty("buynow",Double.class, 0.0,"Buy now price:",null,null);
         items.addContainerProperty("current", Double.class, 0.0,"Highest bid:",null,null);
         items.addContainerProperty("starting", Double.class, 0.0,"Starting price:", null,null);
@@ -373,8 +373,10 @@ public class MainView extends CustomComponent implements View{
         
         items.setColumnCollapsingAllowed(true);
         items.setColumnCollapsed("makebid", true);
+        //items.setColumnCollapsed("desc", true);
         
         items.setPageLength(0);
+        items.setSizeFull();
         items.setStyleName("table-items");
         
         for(AuctionItem ai : list){
@@ -388,8 +390,14 @@ public class MainView extends CustomComponent implements View{
 	        p1.setValue(ai.getBrand());
 	        p1 = (Property)item.getItemProperty("model");
 	        p1.setValue(ai.getModel());
+                
 	        p1 = (Property)item.getItemProperty("desc");
-	        p1.setValue(ai.getDescr());
+                Label lb = new Label(ai.getDescr());
+                VerticalLayout descContainer = new VerticalLayout();
+                descContainer.addComponent(lb);
+                descContainer.setStyleName("item-desc-container");
+	        p1.setValue(descContainer);
+                
 	        p1 = (Property)item.getItemProperty("buynow");
 	        p1.setValue(ai.getBuynow());
 	        p1 =(Property) item.getItemProperty("current");
