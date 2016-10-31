@@ -6,6 +6,7 @@
 package com.mycompany.bicycles;
 
 //Importtaa koko javan sql libraryn
+import java.io.InputStream;
 import java.sql.*;
 
 public class DatabaseHelper {
@@ -260,12 +261,30 @@ static void getItemInfo(){
     }catch(Exception e){ System.out.println(e);}
 }
 
+    static byte[] getItemPhoto(int photoid) {
+        byte[] photoAsBytes = null;
+        try{Class.forName("com.mysql.jdbc.Driver");
+            Connection con=DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/auctions?zeroDateTimeBehavior=convertToNull", "root", "root");
+
+            ResultSet rs=null;
+            PreparedStatement stmt = con.prepareStatement("SELECT * FROM photos WHERE photoid=?");
+            stmt.setInt(1,photoid);
+            rs = stmt.executeQuery();
+            while(rs.next()){
+                photoAsBytes = rs.getBytes("photo");
+            }
+            con.close();
+        }catch(Exception e){ System.out.println(e);}
+        return photoAsBytes;
+    }
+
 //Hakee tietyn käyttäjän kaikki esineet ja niiden kuvat
 static void getUsersItems(){
     try{Class.forName("com.mysql.jdbc.Driver");  
         Connection con=DriverManager.getConnection(  
         "jdbc:mysql://localhost:3306/auctions?zeroDateTimeBehavior=convertToNull", "root", "root");
-        
+
         ResultSet rs=null;
         int userid = 4; //Käyttäjän määrittely
         PreparedStatement stmt = con.prepareStatement("SELECT * FROM items AS i LEFT JOIN photos AS p ON i.itemid=p.itemid WHERE i.userid=?");

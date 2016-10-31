@@ -5,14 +5,23 @@
 package com.mycompany.bicycles;
 
 
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.data.util.sqlcontainer.SQLContainer;
 import com.vaadin.data.util.sqlcontainer.connection.JDBCConnectionPool;
 import com.vaadin.data.util.sqlcontainer.connection.SimpleJDBCConnectionPool;
 import com.vaadin.data.util.sqlcontainer.query.FreeformQuery;
+import com.vaadin.server.Resource;
+import com.vaadin.server.StreamResource;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.*;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.navigator.View;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.Collection;
 
 
 public class UserView extends CustomComponent implements View {
@@ -58,11 +67,11 @@ public class UserView extends CustomComponent implements View {
         try {
             pool = new SimpleJDBCConnectionPool("com.mysql.jdbc.Driver", "jdbc:mysql://localhost:3306/auctions?zeroDateTimeBehavior=convertToNull", "root", "root", 2, 5);
             FreeformQuery query1 = new FreeformQuery(
-                    "SELECT photo as Photo, brand as Brand, model as Model, descr as Description, buynow as 'Buy now price', startprice as 'Starting price', enddate as 'End date', bid as 'Highest bid' FROM items AS i LEFT JOIN photos AS p ON i.itemid=p.itemid LEFT JOIN bids AS b ON i.itemid=b.itemid WHERE i.userid=" + userid, pool
+                    "SELECT photoid as Photo, brand as Brand, model as Model, descr as Description, buynow as 'Buy now price', startprice as 'Starting price', enddate as 'End date', MAX(bid) as 'Highest bid' FROM items AS i LEFT JOIN photos AS p ON i.itemid=p.itemid LEFT JOIN bids AS b ON i.itemid=b.itemid WHERE i.userid=" + userid + " GROUP BY i.itemid, p.photoid", pool
             );
 
             FreeformQuery query2 = new FreeformQuery(
-                    "SELECT photo as Photo, brand as Brand, model as Model, descr as Description, buynow as 'Buy now price', startprice as 'Starting price', enddate as 'End date', bid as 'My bid' FROM items AS i LEFT JOIN photos AS p ON i.itemid=p.itemid LEFT JOIN bids AS b ON i.itemid=b.itemid WHERE b.userid=" + userid, pool
+                    "SELECT photoid as Photo, brand as Brand, model as Model, descr as Description, buynow as 'Buy now price', startprice as 'Starting price', enddate as 'End date', MAX(bid) as 'My bid' FROM items AS i LEFT JOIN photos AS p ON i.itemid=p.itemid LEFT JOIN bids AS b ON i.itemid=b.itemid WHERE b.userid=" + userid + " GROUP BY i.itemid, p.photoid", pool
             );
 
             itemContainer = new SQLContainer(query1);
@@ -83,12 +92,33 @@ public class UserView extends CustomComponent implements View {
         Kyseinen pätkä koodia korvaa taulun ensimmäisen sarakkeen. Tällä vois ehkä jotenki saada kuvan esille....
         ownItems.addGeneratedColumn("Photo", new Table.ColumnGenerator() {
             public Object generateCell(Table source, Object itemId, Object columnId) {
-                //Tähän tarttis kai saada joku tapa esittää kuvat...?
                 TextField tf = new TextField();
                 return tf;
             }
         });
         */
+
+
+        Collection<?> itemIds = ownItems.getItemIds();
+        for(Object itemId:itemIds){
+            Property p = ownItems.getContainerProperty(itemId, "Photo");
+            System.out.println(p.getValue());
+
+            if(p.getValue() != null) {
+                byte[] photoAsBytes = DatabaseHelper.getItemPhoto((int) p.getValue());
+                StreamResource.StreamSource streamSource = new StreamResource.StreamSource() {
+                    public InputStream getStream() {
+                        return new ByteArrayInputStream(photoAsBytes);
+                    }
+                };
+
+                StreamResource resource = new StreamResource(streamSource, "filename");
+                Image image = new Image("image title", resource);
+
+                p.setValue(image);
+            }
+        }
+
 
         ownItems.setSortEnabled(false);
         ownBids.setSortEnabled(false);
@@ -111,9 +141,5 @@ public class UserView extends CustomComponent implements View {
     public void enter(ViewChangeListener.ViewChangeEvent event) {
 
     }
-
-
-
-
 
 }
